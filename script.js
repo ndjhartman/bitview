@@ -60,14 +60,14 @@ class BitConverter {
     }
     
     updateRanges() {
-        // Remove fixed bit width constraints - use JavaScript's BigInt maximum safe values
+        // Use extremely large limits to allow virtually any reasonable input
         if (this.isTwosComplement) {
-            // For two's complement, we'll use reasonable limits that can be displayed
-            this.maxValue = 0x7FFFFFFFFFFFFFFFn; // 64-bit signed max
-            this.minValue = -0x8000000000000000n; // 64-bit signed min
+            // For two's complement, allow a huge range
+            this.maxValue = BigInt('0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'); // 128-bit signed max
+            this.minValue = BigInt('-0x80000000000000000000000000000000'); // 128-bit signed min
         } else {
-            // For unsigned, use a very large but reasonable limit
-            this.maxValue = 0xFFFFFFFFFFFFFFFFn; // 64-bit unsigned max
+            // For unsigned, use an extremely large limit
+            this.maxValue = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'); // 128-bit unsigned max
             this.minValue = 0n;
         }
         
@@ -81,13 +81,9 @@ class BitConverter {
         this.updateRanges();
         localStorage.setItem('bitview-twoscomplement', this.isTwosComplement);
         
-        // Get current value and update if it's outside the new range
+        // Get current value and update display
         const currentValue = this.getCurrentValue();
-        if (currentValue > this.maxValue || currentValue < this.minValue) {
-            this.updateAll(0n);
-        } else {
-            this.updateAll(currentValue);
-        }
+        this.updateAll(currentValue);
     }
 
     getCurrentValue() {
@@ -137,9 +133,7 @@ class BitConverter {
         
         try {
             const bigIntValue = BigInt(cleanValue);
-            if (bigIntValue >= this.minValue && bigIntValue <= this.maxValue) {
-                this.updateAll(bigIntValue, 'decimal');
-            }
+            this.updateAll(bigIntValue, 'decimal');
         } catch {
             // Invalid input, ignore
         }
@@ -164,9 +158,7 @@ class BitConverter {
         
         try {
             const bigIntValue = BigInt('0x' + value);
-            if (bigIntValue <= this.maxValue) {
-                this.updateAll(bigIntValue, 'hex');
-            }
+            this.updateAll(bigIntValue, 'hex');
         } catch {
             // Invalid input, ignore
         }
@@ -186,9 +178,7 @@ class BitConverter {
         
         try {
             const bigIntValue = BigInt('0b' + value);
-            if (bigIntValue <= this.maxValue) {
-                this.updateAll(bigIntValue, 'binary');
-            }
+            this.updateAll(bigIntValue, 'binary');
         } catch {
             // Invalid input, ignore
         }
@@ -274,10 +264,8 @@ class BitConverter {
         // Toggle the bit
         const newValue = currentValue ^ bitValue;
         
-        // Check if the new value is within range
-        if (newValue >= this.minValue && newValue <= this.maxValue) {
-            this.updateAll(newValue);
-        }
+        // Update without range checking
+        this.updateAll(newValue);
     }
     
     updateHexDisplay(value) {
@@ -425,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (input === converter.decimalInput) {
                     const cleanValue = value.replace(/,/g, '');
                     const bigIntValue = BigInt(cleanValue);
-                    isValid = bigIntValue >= converter.minValue && bigIntValue <= converter.maxValue;
+                    isValid = true; // Any valid BigInt is acceptable
                 } else if (input === converter.hexInput) {
                     let hexValue = value.toLowerCase();
                     if (hexValue.startsWith('0x')) {
@@ -433,12 +421,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (/^[0-9a-f]*$/.test(hexValue)) {
                         const bigIntValue = BigInt('0x' + hexValue);
-                        isValid = bigIntValue >= converter.minValue && bigIntValue <= converter.maxValue;
+                        isValid = true; // Any valid hex BigInt is acceptable
                     }
                 } else if (input === converter.binaryInput) {
                     if (/^[01]*$/.test(value)) {
                         const bigIntValue = BigInt('0b' + value);
-                        isValid = bigIntValue >= converter.minValue && bigIntValue <= converter.maxValue;
+                        isValid = true; // Any valid binary BigInt is acceptable
                     }
                 }
             } catch {
