@@ -247,9 +247,9 @@ input:checked + .slider:before {
 }
 
 .bit-display .bit.one {
-    background: #3b82f6 !important;
+    background: #76b900 !important;
     color: #ffffff !important;
-    border: 1px solid #1d4ed8 !important;
+    border: 1px solid #5a7c00 !important;
 }
 
 .bit-display .bit:hover {
@@ -262,7 +262,7 @@ input:checked + .slider:before {
 }
 
 .bit-display .bit.one:hover {
-    background: #2563eb !important;
+    background: #5a7c00 !important;
 }
 
 /* Hex section */
@@ -311,9 +311,9 @@ input:checked + .slider:before {
 }
 
 .hex-char.nonzero {
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #76b900;
+    background: #76b900;
+    color: #ffffff;
+    border: 1px solid #5a7c00;
 }
 
 .hex-char:hover {
@@ -326,7 +326,7 @@ input:checked + .slider:before {
 }
 
 .hex-char.nonzero:hover {
-    background: #bbf7d0;
+    background: #5a7c00;
 }
 
 /* Tooltip */
@@ -511,9 +511,9 @@ input:checked + .slider:before {
 }
 
 .dark-mode .bit-display .bit.one {
-    background: #1e40af !important;
+    background: #76b900 !important;
     color: #ffffff !important;
-    border-color: #3b82f6 !important;
+    border-color: #5a7c00 !important;
 }
 
 .dark-mode .bit-display .bit.zero:hover {
@@ -521,7 +521,7 @@ input:checked + .slider:before {
 }
 
 .dark-mode .bit-display .bit.one:hover {
-    background: #2563eb !important;
+    background: #5a7c00 !important;
 }
 
 .dark-mode .hex-char {
@@ -537,9 +537,9 @@ input:checked + .slider:before {
 }
 
 .dark-mode .hex-char.nonzero {
-    background: #166534;
-    color: #dcfce7;
-    border-color: #76b900;
+    background: #76b900;
+    color: #ffffff;
+    border-color: #5a7c00;
 }
 
 .dark-mode .hex-char:hover {
@@ -552,7 +552,7 @@ input:checked + .slider:before {
 }
 
 .dark-mode .hex-char.nonzero:hover {
-    background: #15803d;
+    background: #5a7c00;
 }
 
 /* Media query for system preference (fallback) */
