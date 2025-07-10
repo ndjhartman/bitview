@@ -225,7 +225,7 @@ input:checked + .slider:before {
     justify-content: flex-start;
 }
 
-.bit {
+.bit-display .bit {
     width: 28px;
     height: 28px;
     display: flex;
@@ -239,29 +239,29 @@ input:checked + .slider:before {
     font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
 }
 
-.bit.zero {
-    background: #f1f5f9;
-    color: #64748b;
-    border: 1px solid #cbd5e0;
+.bit-display .bit.zero {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    border: 1px solid #cbd5e0 !important;
 }
 
-.bit.one {
-    background: #e0f2fe;
-    color: #0c4a6e;
-    border: 1px solid #0891b2;
+.bit-display .bit.one {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+    border: 1px solid #1d4ed8 !important;
 }
 
-.bit:hover {
+.bit-display .bit:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.bit.zero:hover {
-    background: #e2e8f0;
+.bit-display .bit.zero:hover {
+    background: #e2e8f0 !important;
 }
 
-.bit.one:hover {
-    background: #bae6fd;
+.bit-display .bit.one:hover {
+    background: #2563eb !important;
 }
 
 /* Hex section */
@@ -483,24 +483,24 @@ input:checked + .slider:before {
         border-color: #475569;
     }
     
-    .bit.zero {
-        background: #475569;
-        color: #cbd5e0;
-        border-color: #64748b;
+    .bit-display .bit.zero {
+        background: #475569 !important;
+        color: #cbd5e0 !important;
+        border-color: #64748b !important;
     }
     
-    .bit.one {
-        background: #0c4a6e;
-        color: #e0f2fe;
-        border-color: #0891b2;
+    .bit-display .bit.one {
+        background: #1e40af !important;
+        color: #ffffff !important;
+        border-color: #3b82f6 !important;
     }
 
-    .bit.zero:hover {
-        background: #64748b;
+    .bit-display .bit.zero:hover {
+        background: #64748b !important;
     }
 
-    .bit.one:hover {
-        background: #0369a1;
+    .bit-display .bit.one:hover {
+        background: #2563eb !important;
     }
 
     .hex-char {
