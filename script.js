@@ -83,7 +83,14 @@ class BitConverter {
         
         // Get current value and update display
         const currentValue = this.getCurrentValue();
-        this.updateAll(currentValue);
+        
+        // If switching from unsigned to two's complement, keep the current value
+        // If switching from two's complement to unsigned and value is negative, reset to 0
+        if (!this.isTwosComplement && currentValue < 0n) {
+            this.updateAll(0n);
+        } else {
+            this.updateAll(currentValue);
+        }
     }
 
     getCurrentValue() {
@@ -131,6 +138,13 @@ class BitConverter {
         // Remove commas for processing
         const cleanValue = value.replace(/,/g, '');
         
+        // Check if it's a negative number
+        const isNegative = cleanValue.startsWith('-');
+        if (isNegative && !this.isTwosComplement) {
+            // Don't allow negative numbers in unsigned mode
+            return;
+        }
+        
         try {
             const bigIntValue = BigInt(cleanValue);
             this.updateAll(bigIntValue, 'decimal');
@@ -151,8 +165,14 @@ class BitConverter {
             value = value.slice(2);
         }
         
+        // Handle empty hex after 0x removal
+        if (!value) {
+            this.updateAll(0n, 'hex');
+            return;
+        }
+        
         // Validate hex characters
-        if (!/^[0-9a-f]*$/.test(value)) {
+        if (!/^[0-9a-f]+$/.test(value)) {
             return;
         }
         
@@ -172,7 +192,7 @@ class BitConverter {
         }
         
         // Validate binary characters
-        if (!/^[01]*$/.test(value)) {
+        if (!/^[01]+$/.test(value)) {
             return;
         }
         
@@ -276,22 +296,35 @@ class BitConverter {
         const hexString = hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
         this.hexDisplay.innerHTML = '';
         
-        for (let i = 0; i < hexString.length; i++) {
-            const hexChar = hexString[i];
-            const nibblePosition = hexString.length - 1 - i;
-            const startBit = nibblePosition * 4;
-            const endBit = startBit + 3;
+        // Create hex groups of 2 characters
+        const numGroups = Math.ceil(hexString.length / 2);
+        
+        for (let groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+            const groupElement = document.createElement('div');
+            groupElement.className = 'hex-group';
             
-            const hexElement = document.createElement('div');
-            hexElement.className = `hex-char ${hexChar === '0' ? 'zero' : 'nonzero'}`;
-            hexElement.textContent = hexChar;
-            hexElement.dataset.nibble = nibblePosition;
+            const startIdx = groupIndex * 2;
+            const endIdx = Math.min(startIdx + 2, hexString.length);
             
-            // Add hover event listeners
-            hexElement.addEventListener('mouseenter', (e) => this.showHexTooltip(e, startBit, endBit, hexChar));
-            hexElement.addEventListener('mouseleave', () => this.hideTooltip());
+            for (let i = startIdx; i < endIdx; i++) {
+                const hexChar = hexString[i];
+                const nibblePosition = hexString.length - 1 - i;
+                const startBit = nibblePosition * 4;
+                const endBit = startBit + 3;
+                
+                const hexElement = document.createElement('div');
+                hexElement.className = `hex-char ${hexChar === '0' ? 'zero' : 'nonzero'}`;
+                hexElement.textContent = hexChar;
+                hexElement.dataset.nibble = nibblePosition;
+                
+                // Add hover event listeners
+                hexElement.addEventListener('mouseenter', (e) => this.showHexTooltip(e, startBit, endBit, hexChar));
+                hexElement.addEventListener('mouseleave', () => this.hideTooltip());
+                
+                groupElement.appendChild(hexElement);
+            }
             
-            this.hexDisplay.appendChild(hexElement);
+            this.hexDisplay.appendChild(groupElement);
         }
     }
     
@@ -348,7 +381,7 @@ function formatNumber(num) {
 
 function validateInput(input, type) {
     const patterns = {
-        decimal: /^\d+$/,
+        decimal: /^-?\d+$/,  // Allow negative numbers
         hex: /^(0x)?[0-9a-fA-F]+$/,
         binary: /^[01]+$/
     };
@@ -412,21 +445,37 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (input === converter.decimalInput) {
                     const cleanValue = value.replace(/,/g, '');
-                    const bigIntValue = BigInt(cleanValue);
-                    isValid = true; // Any valid BigInt is acceptable
+                    const isNegative = cleanValue.startsWith('-');
+                    
+                    // Allow negative numbers only in two's complement mode
+                    if (isNegative && !converter.isTwosComplement) {
+                        isValid = false;
+                    } else {
+                        const bigIntValue = BigInt(cleanValue);
+                        isValid = true; // Any valid BigInt is acceptable in the correct mode
+                    }
                 } else if (input === converter.hexInput) {
                     let hexValue = value.toLowerCase();
                     if (hexValue.startsWith('0x')) {
                         hexValue = hexValue.slice(2);
                     }
-                    if (/^[0-9a-f]*$/.test(hexValue)) {
-                        const bigIntValue = BigInt('0x' + hexValue);
-                        isValid = true; // Any valid hex BigInt is acceptable
+                    // Allow empty hex after 0x removal, and validate hex characters
+                    if (hexValue === '' || /^[0-9a-f]+$/.test(hexValue)) {
+                        if (hexValue !== '') {
+                            const bigIntValue = BigInt('0x' + hexValue);
+                            isValid = true; // Any valid hex BigInt is acceptable
+                        } else {
+                            isValid = true; // Allow empty hex for typing
+                        }
                     }
                 } else if (input === converter.binaryInput) {
-                    if (/^[01]*$/.test(value)) {
-                        const bigIntValue = BigInt('0b' + value);
-                        isValid = true; // Any valid binary BigInt is acceptable
+                    if (value === '' || /^[01]+$/.test(value)) {
+                        if (value !== '') {
+                            const bigIntValue = BigInt('0b' + value);
+                            isValid = true; // Any valid binary BigInt is acceptable
+                        } else {
+                            isValid = true; // Allow empty binary for typing
+                        }
                     }
                 }
             } catch {

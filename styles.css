@@ -286,12 +286,19 @@ input:checked + .slider:before {
 
 .hex-display {
     display: flex;
-    gap: 4px;
+    flex-wrap: wrap;
+    gap: 8px;
     padding: 1.5rem;
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     justify-content: flex-start;
+}
+
+.hex-group {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 .hex-char {
@@ -414,6 +421,18 @@ input:checked + .slider:before {
     
     .hex-display {
         justify-content: center;
+        gap: 6px;
+        padding: 1rem;
+    }
+    
+    .hex-group {
+        gap: 2px;
+    }
+    
+    .hex-char {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
     }
     
     .viz-header {
@@ -559,6 +578,15 @@ input:checked + .slider:before {
 
 .dark-mode .bit-display .bit.one:hover {
     background: #5a7c00 !important;
+}
+
+.dark-mode .hex-display {
+    background: #404040;
+    border-color: #555555;
+}
+
+.dark-mode .hex-group {
+    /* Inherits gap and layout from parent */
 }
 
 .dark-mode .hex-char {
