@@ -113,7 +113,7 @@ main {
 }
 
 input:checked + .slider {
-    background: #3b82f6;
+    background: #76b900;
 }
 
 input:checked + .slider:before {
@@ -155,9 +155,9 @@ input:checked + .slider:before {
 
 .input-group input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #76b900;
     background: white;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(118, 185, 0, 0.1);
 }
 
 .input-group input::placeholder {
@@ -207,8 +207,8 @@ input:checked + .slider:before {
 
 .bit-count {
     padding: 0.25rem 0.75rem;
-    background: #e0e7ff;
-    color: #3730a3;
+    background: rgba(118, 185, 0, 0.1);
+    color: #5a7c00;
     border-radius: 6px;
 }
 
@@ -222,6 +222,7 @@ input:checked + .slider:before {
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
+    justify-content: flex-start;
 }
 
 .bit {
@@ -240,14 +241,14 @@ input:checked + .slider:before {
 
 .bit.zero {
     background: #f1f5f9;
-    color: #475569;
+    color: #64748b;
     border: 1px solid #cbd5e0;
 }
 
 .bit.one {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #93c5fd;
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #76b900;
 }
 
 .bit:hover {
@@ -260,7 +261,7 @@ input:checked + .slider:before {
 }
 
 .bit.one:hover {
-    background: #bfdbfe;
+    background: #bbf7d0;
 }
 
 /* Hex section */
@@ -282,7 +283,7 @@ input:checked + .slider:before {
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .hex-char {
@@ -451,7 +452,7 @@ input:checked + .slider:before {
     }
     
     .input-group input:focus {
-        border-color: #3b82f6;
+        border-color: #76b900;
         background: #475569;
     }
     
@@ -489,9 +490,9 @@ input:checked + .slider:before {
     }
     
     .bit.one {
-        background: #1e40af;
-        color: #dbeafe;
-        border-color: #3b82f6;
+        background: #166534;
+        color: #dcfce7;
+        border-color: #76b900;
     }
     
     .bit.zero:hover {
@@ -499,7 +500,7 @@ input:checked + .slider:before {
     }
     
     .bit.one:hover {
-        background: #2563eb;
+        background: #22c55e;
     }
     
     .hex-char {
