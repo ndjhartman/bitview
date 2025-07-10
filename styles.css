@@ -218,13 +218,19 @@ input:checked + .slider:before {
 .bit-display {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px;
+    gap: 8px;
     margin-bottom: 2rem;
     padding: 1.5rem;
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     justify-content: flex-start;
+}
+
+.bit-group {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
 }
 
 .bit-display .bit {
@@ -264,11 +270,6 @@ input:checked + .slider:before {
 
 .bit-display .bit.one:hover {
     background: #5a7c00 !important;
-}
-
-/* Add spacing between bit groups (every 4 bits) */
-.bit-display .bit:nth-child(4n):not(:last-child) {
-    margin-right: 8px;
 }
 
 /* Hex section */
@@ -397,6 +398,18 @@ input:checked + .slider:before {
     
     .bit-display {
         justify-content: center;
+        gap: 6px;
+        padding: 1rem;
+    }
+    
+    .bit-group {
+        gap: 1px;
+    }
+    
+    .bit-display .bit {
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
     }
     
     .hex-display {
@@ -524,6 +537,10 @@ input:checked + .slider:before {
     border-color: #555555;
 }
 
+.dark-mode .bit-group {
+    /* Inherits gap and layout from parent */
+}
+
 .dark-mode .bit-display .bit.zero {
     background: #555555 !important;
     color: #cbd5e0 !important;
@@ -573,6 +590,11 @@ input:checked + .slider:before {
 
 .dark-mode .hex-char.nonzero:hover {
     background: #5a7c00;
+}
+
+/* Bit groups in dark mode */
+.dark-mode .bit-group {
+    /* Inherits from parent, no specific styling needed */
 }
 
 /* Media query for system preference (fallback) */

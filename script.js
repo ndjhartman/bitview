@@ -15,6 +15,7 @@ class BitConverter {
         // Load cached states
         this.loadCachedStates();
         
+        // Initialize bit width and modes
         this.updateBitWidth();
         this.updateDarkMode();
         
@@ -124,6 +125,28 @@ class BitConverter {
             return 0n;
         }
     }
+
+    getMinimumBitsNeeded(value) {
+        if (value === 0n) return 8; // Minimum 8 bits for display
+        
+        let minBits;
+        if (this.isTwosComplement && value < 0n) {
+            // For negative numbers in two's complement, we need enough bits to represent the magnitude
+            const absValue = -value;
+            const bitLength = absValue.toString(2).length;
+            // We need at least one more bit than the magnitude for the sign
+            minBits = bitLength + 1;
+        } else {
+            // For positive numbers or unsigned mode
+            minBits = value.toString(2).length;
+        }
+        
+        // Round up to nearest multiple of 4, with minimum of 8
+        const roundedBits = Math.max(8, Math.ceil(minBits / 4) * 4);
+        
+        // Cap at current bit width setting
+        return Math.min(roundedBits, this.bitWidth);
+    }
     
     onDecimalChange(e) {
         const value = e.target.value.trim();
@@ -197,15 +220,16 @@ class BitConverter {
     updateAll(value, source = '') {
         // Handle two's complement conversion for display
         let displayValue = value;
+        const displayBits = this.getMinimumBitsNeeded(displayValue);
         
         // Convert BigInt to string for display
         const valueStr = displayValue.toString();
         const hexStr = '0x' + (displayValue < 0n ? 
             (BigInt(1) << BigInt(this.bitWidth)) + displayValue : displayValue)
-            .toString(16).toUpperCase().padStart(this.bitWidth / 4, '0');
+            .toString(16).toUpperCase().padStart(Math.ceil(displayBits / 4), '0');
         const binaryStr = (displayValue < 0n ? 
             (BigInt(1) << BigInt(this.bitWidth)) + displayValue : displayValue)
-            .toString(2).padStart(this.bitWidth, '0');
+            .toString(2).padStart(displayBits, '0');
         
         // Update input fields
         if (source !== 'decimal') {
@@ -218,34 +242,51 @@ class BitConverter {
             this.binaryInput.value = binaryStr;
         }
         
+        // Update bit count display
+        this.bitCount.textContent = `${displayBits} bits (max ${this.bitWidth})`;
+        
         // Update visualizations
         this.updateBitDisplay(displayValue);
         this.updateHexDisplay(displayValue);
     }
     
     updateBitDisplay(value) {
+        const displayBits = this.getMinimumBitsNeeded(value);
         const binaryValue = value < 0n ? 
             (BigInt(1) << BigInt(this.bitWidth)) + value : value;
-        const binaryString = binaryValue.toString(2).padStart(this.bitWidth, '0');
+        const binaryString = binaryValue.toString(2).padStart(displayBits, '0');
         this.bitDisplay.innerHTML = '';
         
-        for (let i = 0; i < this.bitWidth; i++) {
-            const bit = binaryString[i];
-            const bitPosition = this.bitWidth - 1 - i;
+        // Create bit groups of 4
+        const numGroups = Math.ceil(displayBits / 4);
+        
+        for (let groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+            const groupElement = document.createElement('div');
+            groupElement.className = 'bit-group';
             
-            const bitElement = document.createElement('div');
-            bitElement.className = `bit ${bit === '1' ? 'one' : 'zero'}`;
-            bitElement.textContent = bit;
-            bitElement.dataset.position = bitPosition;
+            const startIdx = groupIndex * 4;
+            const endIdx = Math.min(startIdx + 4, displayBits);
             
-            // Add hover event listeners
-            bitElement.addEventListener('mouseenter', (e) => this.showBitTooltip(e, bitPosition));
-            bitElement.addEventListener('mouseleave', () => this.hideTooltip());
+            for (let i = startIdx; i < endIdx; i++) {
+                const bit = binaryString[i];
+                const bitPosition = displayBits - 1 - i;
+                
+                const bitElement = document.createElement('div');
+                bitElement.className = `bit ${bit === '1' ? 'one' : 'zero'}`;
+                bitElement.textContent = bit;
+                bitElement.dataset.position = bitPosition;
+                
+                // Add hover event listeners
+                bitElement.addEventListener('mouseenter', (e) => this.showBitTooltip(e, bitPosition));
+                bitElement.addEventListener('mouseleave', () => this.hideTooltip());
+                
+                // Add click event listener for bit toggling
+                bitElement.addEventListener('click', (e) => this.toggleBit(bitPosition));
+                
+                groupElement.appendChild(bitElement);
+            }
             
-            // Add click event listener for bit toggling
-            bitElement.addEventListener('click', (e) => this.toggleBit(bitPosition));
-            
-            this.bitDisplay.appendChild(bitElement);
+            this.bitDisplay.appendChild(groupElement);
         }
     }
 
@@ -263,7 +304,8 @@ class BitConverter {
     }
     
     updateHexDisplay(value) {
-        const hexDigits = this.is64Bit ? 16 : 8;
+        const displayBits = this.getMinimumBitsNeeded(value);
+        const hexDigits = Math.ceil(displayBits / 4);
         const hexValue = value < 0n ? 
             (BigInt(1) << BigInt(this.bitWidth)) + value : value;
         const hexString = hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
