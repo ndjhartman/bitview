@@ -8,6 +8,7 @@ class BitConverter {
         this.tooltip = document.getElementById('tooltip');
         this.darkModeToggle = document.getElementById('darkModeToggle');
         this.bitCount = document.getElementById('bitCount');
+        this.nibbleCount = document.getElementById('nibbleCount');
         this.maxValueDisplay = document.getElementById('maxValueDisplay');
         
         // Load cached states
@@ -113,10 +114,15 @@ class BitConverter {
         
         // Handle partial negative input (just "-")
         if (value === '-') {
-            // Don't update the display, but set two's complement mode and update mode display
+            // Don't update the display with a value, but still update the mode
             this.isTwosComplement = true;
             const modeText = 'Two\'s Complement';
             this.maxValueDisplay.textContent = `Mode: ${modeText}`;
+            // Clear the bit and hex displays but don't update other inputs
+            this.bitDisplay.innerHTML = '';
+            this.hexDisplay.innerHTML = '';
+            this.bitCount.textContent = '0 bits';
+            this.nibbleCount.textContent = '0 nibbles';
             return;
         }
         
@@ -239,8 +245,12 @@ class BitConverter {
             this.binaryInput.value = binaryStr;
         }
         
-        // Update bit count display - show actual bits needed
-        this.bitCount.textContent = `${actualBitsNeeded} bits`;
+        // Update bit count display - show rounded bits (nearest 4 bits)
+        this.bitCount.textContent = `${displayBits} bits`;
+        
+        // Update nibble count display
+        const nibbleCount = Math.ceil(displayBits / 4);
+        this.nibbleCount.textContent = `${nibbleCount} nibbles`;
         
         // Update visualizations
         this.updateBitDisplay(displayValue);
