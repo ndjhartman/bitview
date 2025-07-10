@@ -91,6 +91,16 @@ class BitConverter {
         } else {
             this.updateAll(currentValue);
         }
+        
+        // Force re-validation of all inputs after mode change
+        this.validateAllInputs();
+    }
+
+    validateAllInputs() {
+        // Trigger validation for all inputs
+        this.decimalInput.dispatchEvent(new Event('input'));
+        this.hexInput.dispatchEvent(new Event('input'));
+        this.binaryInput.dispatchEvent(new Event('input'));
     }
 
     getCurrentValue() {
@@ -235,6 +245,17 @@ class BitConverter {
         // Update visualizations
         this.updateBitDisplay(displayValue);
         this.updateHexDisplay(displayValue);
+        
+        // Update validation styling for all inputs
+        this.updateInputValidation();
+    }
+
+    updateInputValidation() {
+        // Clear error styling from all inputs since we have valid values
+        // When updateAll is called, it means we successfully converted a value
+        this.decimalInput.classList.remove('error');
+        this.hexInput.classList.remove('error');
+        this.binaryInput.classList.remove('error');
     }
     
     updateBitDisplay(value) {
@@ -460,22 +481,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         hexValue = hexValue.slice(2);
                     }
                     // Allow empty hex after 0x removal, and validate hex characters
-                    if (hexValue === '' || /^[0-9a-f]+$/.test(hexValue)) {
-                        if (hexValue !== '') {
+                    if (hexValue === '') {
+                        isValid = true; // Allow empty hex for typing
+                    } else if (/^[0-9a-f]+$/.test(hexValue)) {
+                        try {
                             const bigIntValue = BigInt('0x' + hexValue);
                             isValid = true; // Any valid hex BigInt is acceptable
-                        } else {
-                            isValid = true; // Allow empty hex for typing
+                        } catch (error) {
+                            isValid = false; // BigInt conversion failed
                         }
+                    } else {
+                        isValid = false; // Invalid hex characters
                     }
                 } else if (input === converter.binaryInput) {
-                    if (value === '' || /^[01]+$/.test(value)) {
-                        if (value !== '') {
+                    if (value === '') {
+                        isValid = true; // Allow empty binary for typing
+                    } else if (/^[01]+$/.test(value)) {
+                        try {
                             const bigIntValue = BigInt('0b' + value);
                             isValid = true; // Any valid binary BigInt is acceptable
-                        } else {
-                            isValid = true; // Allow empty binary for typing
+                        } catch {
+                            isValid = false; // BigInt conversion failed
                         }
+                    } else {
+                        isValid = false; // Invalid binary characters
                     }
                 }
             } catch {
