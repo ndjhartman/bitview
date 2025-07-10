@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitView Comprehensive Test Suite</title>
+    <style>
+        body { 
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace; 
+            padding: 20px; 
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1a202c; text-align: center; margin-bottom: 2rem; }
+        .test-section { 
+            margin-bottom: 30px; 
+            background: white;
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #374151;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .test-case { 
+            margin: 8px 0; 
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .pass { 
+            background: #ecfdf5; 
+            color: #065f46; 
+            border-left: 4px solid #10b981;
+        }
+        .fail { 
+            background: #fef2f2; 
+            color: #991b1b; 
+            border-left: 4px solid #ef4444;
+        }
+        .error { 
+            background: #fef3c7; 
+            color: #92400e; 
+            border-left: 4px solid #f59e0b;
+            font-weight: bold; 
+        }
+        .summary {
+            background: #f8fafc;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .summary.all-pass { border-color: #10b981; background: #ecfdf5; }
+        .summary.has-fails { border-color: #ef4444; background: #fef2f2; }
+        .test-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a202c;
+        }
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .run-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .run-button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 BitView Comprehensive Test Suite</h1>
+        
+        <button class="run-button" onclick="runAllTests()">🚀 Run All Tests</button>
+        
+        <div id="summary" class="summary" style="display: none;"></div>
+        <div id="stats" class="test-stats" style="display: none;"></div>
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Comprehensive test cases
+        const TEST_CASES = {
+            basic32: [
+                { decimal: '0', hex: '0x00000000', binary: '00000000000000000000000000000000' },
+                { decimal: '1', hex: '0x00000001', binary: '00000000000000000000000000000001' },
+                { decimal: '15', hex: '0x0000000F', binary: '00000000000000000000000000001111' },
+                { decimal: '16', hex: '0x00000010', binary: '00000000000000000000000000010000' },
+                { decimal: '255', hex: '0x000000FF', binary: '00000000000000000000000011111111' },
+                { decimal: '256', hex: '0x00000100', binary: '00000000000000000000000100000000' },
+                { decimal: '65535', hex: '0x0000FFFF', binary: '00000000000000001111111111111111' },
+                { decimal: '65536', hex: '0x00010000', binary: '00000000000000010000000000000000' },
+                { decimal: '16777215', hex: '0x00FFFFFF', binary: '00000000111111111111111111111111' },
+                { decimal: '16777216', hex: '0x01000000', binary: '00000001000000000000000000000000' },
+                { decimal: '4294967295', hex: '0xFFFFFFFF', binary: '11111111111111111111111111111111' }
+            ],
+            
+            basic64: [
+                { decimal: '0', hex: '0x0000000000000000', binary: '0000000000000000000000000000000000000000000000000000000000000000' },
+                { decimal: '1', hex: '0x0000000000000001', binary: '0000000000000000000000000000000000000000000000000000000000000001' },
+                { decimal: '4294967295', hex: '0x00000000FFFFFFFF', binary: '0000000000000000000000000000000011111111111111111111111111111111' },
+                { decimal: '4294967296', hex: '0x0000000100000000', binary: '0000000000000000000000000000000100000000000000000000000000000000' },
+                { decimal: '1099511627775', hex: '0x000000FFFFFFFFFF', binary: '0000000000000000000000001111111111111111111111111111111111111111' },
+                { decimal: '18446744073709551615', hex: '0xFFFFFFFFFFFFFFFF', binary: '1111111111111111111111111111111111111111111111111111111111111111' }
+            ],
+            
+            powersOf2_32: [
+                { decimal: '1', power: 0 },
+                { decimal: '2', power: 1 },
+                { decimal: '4', power: 2 },
+                { decimal: '8', power: 3 },
+                { decimal: '16', power: 4 },
+                { decimal: '32', power: 5 },
+                { decimal: '64', power: 6 },
+                { decimal: '128', power: 7 },
+                { decimal: '256', power: 8 },
+                { decimal: '512', power: 9 },
+                { decimal: '1024', power: 10 },
+                { decimal: '2048', power: 11 },
+                { decimal: '4096', power: 12 },
+                { decimal: '8192', power: 13 },
+                { decimal: '16384', power: 14 },
+                { decimal: '32768', power: 15 },
+                { decimal: '65536', power: 16 },
+                { decimal: '2147483648', power: 31 }
+            ],
+            
+            signedBoundaries32: [
+                { decimal: '2147483647', hex: '0x7FFFFFFF', binary: '01111111111111111111111111111111', description: 'Max signed 32-bit' },
+                { decimal: '2147483648', hex: '0x80000000', binary: '10000000000000000000000000000000', description: 'Min signed 32-bit + 1' }
+            ],
+            
+            signedBoundaries64: [
+                { decimal: '9223372036854775807', hex: '0x7FFFFFFFFFFFFFFF', binary: '0111111111111111111111111111111111111111111111111111111111111111', description: 'Max signed 64-bit' },
+                { decimal: '9223372036854775808', hex: '0x8000000000000000', binary: '1000000000000000000000000000000000000000000000000000000000000000', description: 'Min signed 64-bit + 1' }
+            ],
+            
+            hexPatterns: [
+                { decimal: '43981', hex: '0x0000ABCD', binary: '00000000000000001010101111001101' },
+                { decimal: '3735928559', hex: '0xDEADBEEF', binary: '11011110101011011011111011101111' },
+                { decimal: '3405691582', hex: '0xCAFEBABE', binary: '11001010111111101011101010111110' },
+                { decimal: '4277009102', hex: '0xFEEDFACE', binary: '11111110111011011111101011001110' }
+            ]
+        };
+
+        // Mock BitConverter for comprehensive testing
+        class TestBitConverter {
+            constructor() {
+                this.is64Bit = false;
+                this.updateBitWidth();
+            }
+
+            updateBitWidth() {
+                this.bitWidth = this.is64Bit ? 64 : 32;
+                this.maxValue = this.is64Bit ? 0xFFFFFFFFFFFFFFFFn : 0xFFFFFFFFn;
+            }
+
+            setBitWidth(is64Bit) {
+                this.is64Bit = is64Bit;
+                this.updateBitWidth();
+            }
+
+            // Convert decimal to hex
+            decimalToHex(decimalStr) {
+                const value = BigInt(decimalStr);
+                if (value < 0n || value > this.maxValue) {
+                    throw new Error('Value out of range');
+                }
+                const hexDigits = this.is64Bit ? 16 : 8;
+                return '0x' + value.toString(16).toUpperCase().padStart(hexDigits, '0');
+            }
+
+            // Convert decimal to binary
+            decimalToBinary(decimalStr) {
+                const value = BigInt(decimalStr);
+                if (value < 0n || value > this.maxValue) {
+                    throw new Error('Value out of range');
+                }
+                return value.toString(2).padStart(this.bitWidth, '0');
+            }
+
+            // Convert hex to decimal
+            hexToDecimal(hexStr) {
+                let value = hexStr.toLowerCase().trim();
+                if (value.startsWith('0x')) {
+                    value = value.slice(2);
+                }
+                if (!/^[0-9a-f]+$/.test(value)) {
+                    throw new Error('Invalid hex format');
+                }
+                const bigIntValue = BigInt('0x' + value);
+                if (bigIntValue > this.maxValue) {
+                    throw new Error('Value out of range');
+                }
+                return bigIntValue.toString();
+            }
+
+            // Convert binary to decimal
+            binaryToDecimal(binaryStr) {
+                if (!/^[01]+$/.test(binaryStr)) {
+                    throw new Error('Invalid binary format');
+                }
+                const bigIntValue = BigInt('0b' + binaryStr);
+                if (bigIntValue > this.maxValue) {
+                    throw new Error('Value out of range');
+                }
+                return bigIntValue.toString();
+            }
+
+            // Test bit positions and values
+            getBitPositions(decimalStr) {
+                const value = BigInt(decimalStr);
+                const binaryString = value.toString(2).padStart(this.bitWidth, '0');
+                const positions = [];
+                
+                for (let i = 0; i < this.bitWidth; i++) {
+                    const bit = binaryString[i];
+                    const bitPosition = this.bitWidth - 1 - i;
+                    const bitValue = 2n ** BigInt(bitPosition);
+                    positions.push({ 
+                        index: i, 
+                        bit, 
+                        position: bitPosition, 
+                        value: bitValue.toString()
+                    });
+                }
+                
+                return positions;
+            }
+
+            // Test hex nibbles
+            getHexNibbles(decimalStr) {
+                const value = BigInt(decimalStr);
+                const hexDigits = this.is64Bit ? 16 : 8;
+                const hexString = value.toString(16).toUpperCase().padStart(hexDigits, '0');
+                const nibbles = [];
+                
+                for (let i = 0; i < hexString.length; i++) {
+                    const hexChar = hexString[i];
+                    const nibblePosition = hexString.length - 1 - i;
+                    const startBit = nibblePosition * 4;
+                    const endBit = startBit + 3;
+                    const decimal = parseInt(hexChar, 16);
+                    const binary = decimal.toString(2).padStart(4, '0');
+                    
+                    nibbles.push({ 
+                        index: i,
+                        char: hexChar, 
+                        nibblePosition, 
+                        startBit, 
+                        endBit,
+                        decimal,
+                        binary
+                    });
+                }
+                
+                return nibbles;
+            }
+        }
+
+        // Test runner
+        class TestRunner {
+            constructor() {
+                this.results = [];
+                this.stats = {
+                    total: 0,
+                    passed: 0,
+                    failed: 0,
+                    errors: 0
+                };
+                this.converter = new TestBitConverter();
+            }
+
+            addResult(type, message, testName = '') {
+                this.results.push({ type, message, testName });
+                this.stats.total++;
+                if (type === 'pass') this.stats.passed++;
+                else if (type === 'fail') this.stats.failed++;
+                else if (type === 'error') this.stats.errors++;
+            }
+
+            testConversion(fromValue, toValue, conversionType, testName) {
+                try {
+                    let result;
+                    switch (conversionType) {
+                        case 'dec-to-hex':
+                            result = this.converter.decimalToHex(fromValue);
+                            break;
+                        case 'dec-to-bin':
+                            result = this.converter.decimalToBinary(fromValue);
+                            break;
+                        case 'hex-to-dec':
+                            result = this.converter.hexToDecimal(fromValue);
+                            break;
+                        case 'bin-to-dec':
+                            result = this.converter.binaryToDecimal(fromValue);
+                            break;
+                    }
+                    
+                    if (result === toValue) {
+                        this.addResult('pass', `✓ ${conversionType}: ${fromValue} → ${result}`, testName);
+                    } else {
+                        this.addResult('fail', `✗ ${conversionType}: ${fromValue} → Expected: ${toValue}, Got: ${result}`, testName);
+                    }
+                } catch (error) {
+                    this.addResult('error', `✗ ${conversionType}: ${fromValue} → Error: ${error.message}`, testName);
+                }
+            }
+
+            // Test basic conversions
+            testBasicConversions(testCases, bitWidth, sectionName) {
+                this.converter.setBitWidth(bitWidth === 64);
+                
+                testCases.forEach(testCase => {
+                    const { decimal, hex, binary } = testCase;
+                    
+                    // Test all conversion directions
+                    this.testConversion(decimal, hex, 'dec-to-hex', sectionName);
+                    this.testConversion(decimal, binary, 'dec-to-bin', sectionName);
+                    this.testConversion(hex, decimal, 'hex-to-dec', sectionName);
+                    this.testConversion(binary, decimal, 'bin-to-dec', sectionName);
+                });
+            }
+
+            // Test powers of 2
+            testPowersOf2(testCases, sectionName) {
+                this.converter.setBitWidth(false); // 32-bit
+                
+                testCases.forEach(testCase => {
+                    const { decimal, power } = testCase;
+                    
+                    try {
+                        const positions = this.converter.getBitPositions(decimal);
+                        const setBits = positions.filter(p => p.bit === '1');
+                        
+                        if (setBits.length === 1 && setBits[0].position === power) {
+                            this.addResult('pass', `✓ Power of 2: ${decimal} = 2^${power} (bit ${power} set)`, sectionName);
+                        } else {
+                            this.addResult('fail', `✗ Power of 2: ${decimal} should have only bit ${power} set`, sectionName);
+                        }
+                    } catch (error) {
+                        this.addResult('error', `✗ Power of 2 test: ${decimal} → ${error.message}`, sectionName);
+                    }
+                });
+            }
+
+            // Test bit positions for specific values
+            testBitPositions(sectionName) {
+                this.converter.setBitWidth(false); // 32-bit
+                
+                const testCases = [
+                    { value: '255', expectedBits: [0,1,2,3,4,5,6,7] },
+                    { value: '65535', expectedBits: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] },
+                    { value: '1', expectedBits: [0] },
+                    { value: '2', expectedBits: [1] },
+                    { value: '4', expectedBits: [2] }
+                ];
+                
+                testCases.forEach(testCase => {
+                    try {
+                        const positions = this.converter.getBitPositions(testCase.value);
+                        const setBits = positions.filter(p => p.bit === '1').map(p => p.position).sort((a,b) => a-b);
+                        
+                        if (JSON.stringify(setBits) === JSON.stringify(testCase.expectedBits)) {
+                            this.addResult('pass', `✓ Bit positions for ${testCase.value}: [${setBits.join(',')}]`, sectionName);
+                        } else {
+                            this.addResult('fail', `✗ Bit positions for ${testCase.value}: Expected [${testCase.expectedBits.join(',')}], Got [${setBits.join(',')}]`, sectionName);
+                        }
+                    } catch (error) {
+                        this.addResult('error', `✗ Bit position test: ${testCase.value} → ${error.message}`, sectionName);
+                    }
+                });
+            }
+
+            // Test hex nibbles
+            testHexNibbles(sectionName) {
+                this.converter.setBitWidth(false); // 32-bit
+                
+                const testCases = [
+                    { value: '255', expectedNibbles: [{ char: 'F', startBit: 4, endBit: 7 }, { char: 'F', startBit: 0, endBit: 3 }] },
+                    { value: '4095', expectedNibbles: [{ char: 'F', startBit: 8, endBit: 11 }, { char: 'F', startBit: 4, endBit: 7 }, { char: 'F', startBit: 0, endBit: 3 }] }
+                ];
+                
+                testCases.forEach(testCase => {
+                    try {
+                        const nibbles = this.converter.getHexNibbles(testCase.value);
+                        const nonZeroNibbles = nibbles.filter(n => n.char !== '0');
+                        
+                        let isCorrect = nonZeroNibbles.length === testCase.expectedNibbles.length;
+                        if (isCorrect) {
+                            for (let i = 0; i < nonZeroNibbles.length; i++) {
+                                const actual = nonZeroNibbles[i];
+                                const expected = testCase.expectedNibbles[i];
+                                if (actual.char !== expected.char || actual.startBit !== expected.startBit || actual.endBit !== expected.endBit) {
+                                    isCorrect = false;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (isCorrect) {
+                            this.addResult('pass', `✓ Hex nibbles for ${testCase.value}: ${nonZeroNibbles.map(n => `${n.char}(${n.startBit}-${n.endBit})`).join(', ')}`, sectionName);
+                        } else {
+                            this.addResult('fail', `✗ Hex nibbles for ${testCase.value}: Incorrect nibble mapping`, sectionName);
+                        }
+                    } catch (error) {
+                        this.addResult('error', `✗ Hex nibble test: ${testCase.value} → ${error.message}`, sectionName);
+                    }
+                });
+            }
+
+            // Test edge cases
+            testEdgeCases(sectionName) {
+                const edgeCases = [
+                    { test: 'Empty hex after 0x removal', input: '0x', type: 'hex', expectError: true },
+                    { test: 'Invalid hex characters', input: 'GHIJ', type: 'hex', expectError: true },
+                    { test: 'Invalid binary characters', input: '1012', type: 'binary', expectError: true },
+                    { test: 'Leading zeros in hex', input: '0x000000FF', type: 'hex', expected: '255' },
+                    { test: 'Hex without 0x prefix', input: 'FF', type: 'hex', expected: '255' },
+                    { test: 'Single bit binary', input: '1', type: 'binary', expected: '1' },
+                    { test: 'All zeros binary', input: '0000', type: 'binary', expected: '0' }
+                ];
+                
+                edgeCases.forEach(testCase => {
+                    try {
+                        let result;
+                        if (testCase.type === 'hex') {
+                            result = this.converter.hexToDecimal(testCase.input);
+                        } else if (testCase.type === 'binary') {
+                            result = this.converter.binaryToDecimal(testCase.input);
+                        }
+                        
+                        if (testCase.expectError) {
+                            this.addResult('fail', `✗ Edge case: ${testCase.test} should have failed but got: ${result}`, sectionName);
+                        } else if (result === testCase.expected) {
+                            this.addResult('pass', `✓ Edge case: ${testCase.test} → ${result}`, sectionName);
+                        } else {
+                            this.addResult('fail', `✗ Edge case: ${testCase.test} → Expected: ${testCase.expected}, Got: ${result}`, sectionName);
+                        }
+                    } catch (error) {
+                        if (testCase.expectError) {
+                            this.addResult('pass', `✓ Edge case: ${testCase.test} correctly failed: ${error.message}`, sectionName);
+                        } else {
+                            this.addResult('error', `✗ Edge case: ${testCase.test} → Unexpected error: ${error.message}`, sectionName);
+                        }
+                    }
+                });
+            }
+
+            // Run all tests
+            runAllTests() {
+                this.results = [];
+                this.stats = { total: 0, passed: 0, failed: 0, errors: 0 };
+                
+                // Basic 32-bit conversions
+                this.testBasicConversions(TEST_CASES.basic32, 32, '32-bit Basic Conversions');
+                
+                // Basic 64-bit conversions
+                this.testBasicConversions(TEST_CASES.basic64, 64, '64-bit Basic Conversions');
+                
+                // Powers of 2
+                this.testPowersOf2(TEST_CASES.powersOf2_32, 'Powers of 2 (32-bit)');
+                
+                // Signed boundaries
+                this.testBasicConversions(TEST_CASES.signedBoundaries32, 32, 'Signed Integer Boundaries (32-bit)');
+                this.testBasicConversions(TEST_CASES.signedBoundaries64, 64, 'Signed Integer Boundaries (64-bit)');
+                
+                // Hex patterns
+                this.testBasicConversions(TEST_CASES.hexPatterns, 32, 'Common Hex Patterns');
+                
+                // Bit position tests
+                this.testBitPositions('Bit Position Validation');
+                
+                // Hex nibble tests
+                this.testHexNibbles('Hex Nibble Validation');
+                
+                // Edge cases
+                this.testEdgeCases('Edge Cases & Error Handling');
+                
+                return this.results;
+            }
+
+            generateReport() {
+                const sections = {};
+                this.results.forEach(result => {
+                    if (!sections[result.testName]) {
+                        sections[result.testName] = [];
+                    }
+                    sections[result.testName].push(result);
+                });
+                
+                return { sections, stats: this.stats };
+            }
+        }
+
+        // Main test execution
+        function runAllTests() {
+            const runner = new TestRunner();
+            const startTime = performance.now();
+            
+            runner.runAllTests();
+            const report = runner.generateReport();
+            
+            const endTime = performance.now();
+            const duration = Math.round(endTime - startTime);
+            
+            displayResults(report, duration);
+        }
+
+        function displayResults(report, duration) {
+            const { sections, stats } = report;
+            
+            // Update summary
+            const summaryDiv = document.getElementById('summary');
+            const isAllPass = stats.failed === 0 && stats.errors === 0;
+            summaryDiv.className = `summary ${isAllPass ? 'all-pass' : 'has-fails'}`;
+            summaryDiv.innerHTML = `
+                <h2>${isAllPass ? '🎉 All Tests Passed!' : '⚠️ Some Tests Failed'}</h2>
+                <p>Completed ${stats.total} tests in ${duration}ms</p>
+                <p><strong>${stats.passed}/${stats.total}</strong> tests passed (${(stats.passed/stats.total*100).toFixed(1)}%)</p>
+            `;
+            summaryDiv.style.display = 'block';
+            
+            // Update stats
+            const statsDiv = document.getElementById('stats');
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #10b981;">${stats.passed}</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #ef4444;">${stats.failed}</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #f59e0b;">${stats.errors}</div>
+                    <div class="stat-label">Errors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${duration}ms</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+            `;
+            statsDiv.style.display = 'grid';
+            
+            // Update test results
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            for (const [sectionName, results] of Object.entries(sections)) {
+                const sectionStats = results.reduce((acc, r) => {
+                    acc[r.type]++;
+                    return acc;
+                }, { pass: 0, fail: 0, error: 0 });
+                
+                html += `
+                    <div class="test-section">
+                        <h2>${sectionName} (${sectionStats.pass}/${results.length} passed)</h2>
+                        ${results.map(result => 
+                            `<div class="test-case ${result.type}">${result.message}</div>`
+                        ).join('')}
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            console.log('BitView Comprehensive Test Suite loaded. Click "Run All Tests" to begin.');
+        });
+    </script>
+</body>
+</html> 
