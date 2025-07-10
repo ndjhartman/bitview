@@ -275,6 +275,10 @@ class BitConverter {
             const startIdx = groupIndex * 4;
             const endIdx = Math.min(startIdx + 4, displayBits);
             
+            // Calculate bit indices for this group
+            const highestBitInGroup = displayBits - 1 - startIdx;
+            const lowestBitInGroup = displayBits - 1 - (endIdx - 1);
+            
             for (let i = startIdx; i < endIdx; i++) {
                 const bit = binaryString[i];
                 const bitPosition = displayBits - 1 - i;
@@ -293,6 +297,16 @@ class BitConverter {
                 
                 groupElement.appendChild(bitElement);
             }
+            
+            // Add subscript showing bit range
+            const subscriptElement = document.createElement('div');
+            subscriptElement.className = 'bit-group-subscript';
+            if (highestBitInGroup === lowestBitInGroup) {
+                subscriptElement.textContent = highestBitInGroup.toString();
+            } else {
+                subscriptElement.textContent = `${highestBitInGroup}-${lowestBitInGroup}`;
+            }
+            groupElement.appendChild(subscriptElement);
             
             this.bitDisplay.appendChild(groupElement);
         }
@@ -327,6 +341,11 @@ class BitConverter {
             const startIdx = groupIndex * 2;
             const endIdx = Math.min(startIdx + 2, hexString.length);
             
+            // Calculate bit indices for this hex group
+            // Each hex character represents 4 bits
+            const highestBitInGroup = (hexString.length - startIdx) * 4 - 1;
+            const lowestBitInGroup = (hexString.length - endIdx) * 4;
+            
             for (let i = startIdx; i < endIdx; i++) {
                 const hexChar = hexString[i];
                 const nibblePosition = hexString.length - 1 - i;
@@ -344,6 +363,16 @@ class BitConverter {
                 
                 groupElement.appendChild(hexElement);
             }
+            
+            // Add subscript showing bit range
+            const subscriptElement = document.createElement('div');
+            subscriptElement.className = 'hex-group-subscript';
+            if (highestBitInGroup === lowestBitInGroup) {
+                subscriptElement.textContent = highestBitInGroup.toString();
+            } else {
+                subscriptElement.textContent = `${highestBitInGroup}-${lowestBitInGroup}`;
+            }
+            groupElement.appendChild(subscriptElement);
             
             this.hexDisplay.appendChild(groupElement);
         }

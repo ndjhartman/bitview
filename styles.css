@@ -219,7 +219,7 @@ input:checked + .slider:before {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     padding: 1.5rem;
     background: #f8fafc;
     border-radius: 12px;
@@ -231,6 +231,17 @@ input:checked + .slider:before {
     display: flex;
     gap: 2px;
     flex-shrink: 0;
+    position: relative;
+}
+
+.bit-group-subscript {
+    position: absolute;
+    bottom: -18px;
+    right: 0;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
 }
 
 .bit-display .bit {
@@ -299,6 +310,17 @@ input:checked + .slider:before {
     display: flex;
     gap: 4px;
     flex-shrink: 0;
+    position: relative;
+}
+
+.hex-group-subscript {
+    position: absolute;
+    bottom: -18px;
+    right: 0;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
 }
 
 .hex-char {
@@ -407,10 +429,17 @@ input:checked + .slider:before {
         justify-content: center;
         gap: 6px;
         padding: 1rem;
+        margin-bottom: 2.5rem;
     }
     
     .bit-group {
         gap: 1px;
+    }
+    
+    .bit-group-subscript,
+    .hex-group-subscript {
+        font-size: 0.65rem;
+        bottom: -16px;
     }
     
     .bit-display .bit {
@@ -423,6 +452,7 @@ input:checked + .slider:before {
         justify-content: center;
         gap: 6px;
         padding: 1rem;
+        margin-bottom: 2.5rem;
     }
     
     .hex-group {
@@ -587,6 +617,11 @@ input:checked + .slider:before {
 
 .dark-mode .hex-group {
     /* Inherits gap and layout from parent */
+}
+
+.dark-mode .bit-group-subscript,
+.dark-mode .hex-group-subscript {
+    color: #9ca3af;
 }
 
 .dark-mode .hex-char {
