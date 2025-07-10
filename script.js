@@ -112,17 +112,8 @@ class BitConverter {
             return;
         }
         
-        // Handle partial negative input (just "-")
+        // Skip processing if just "-" (partial negative input)
         if (value === '-') {
-            // Don't update the display with a value, but still update the mode
-            this.isTwosComplement = true;
-            const modeText = 'Two\'s Complement';
-            this.maxValueDisplay.textContent = `Mode: ${modeText}`;
-            // Clear the bit and hex displays but don't update other inputs
-            this.bitDisplay.innerHTML = '';
-            this.hexDisplay.innerHTML = '';
-            this.bitCount.textContent = '0 bits';
-            this.nibbleCount.textContent = '0 nibbles';
             return;
         }
         
