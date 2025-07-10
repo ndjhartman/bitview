@@ -211,7 +211,7 @@ class BitConverter {
             const endBit = startBit + 3;
             
             const hexElement = document.createElement('div');
-            hexElement.className = 'hex-char';
+            hexElement.className = `hex-char ${hexChar === '0' ? 'zero' : 'nonzero'}`;
             hexElement.textContent = hexChar;
             hexElement.dataset.nibble = nibblePosition;
             
