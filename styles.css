@@ -59,9 +59,10 @@ main {
     padding: 1.5rem 2rem;
     display: flex;
     justify-content: center;
+    gap: 3rem;
 }
 
-.bit-width-toggle {
+.bit-width-toggle, .dark-mode-toggle {
     display: flex;
     align-items: center;
 }
@@ -350,6 +351,12 @@ input:checked + .slider:before {
         font-size: 2rem;
     }
     
+    .controls-section {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1rem 1.5rem;
+    }
+    
     .input-section {
         padding: 1.5rem;
     }
@@ -361,10 +368,6 @@ input:checked + .slider:before {
     
     .visualization-section {
         padding: 1.5rem;
-    }
-    
-    .controls-section {
-        padding: 1rem 1.5rem;
     }
     
     .bit-display {
@@ -421,95 +424,100 @@ input:checked + .slider:before {
 }
 
 /* Dark mode support */
+.dark-mode {
+    background: #0f172a;
+    color: #f1f5f9;
+}
+
+.dark-mode .converter-panel {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.dark-mode .controls-section {
+    background: #334155;
+    border-color: #475569;
+}
+
+.dark-mode .toggle-label {
+    color: #f1f5f9;
+}
+
+.dark-mode .input-group label {
+    color: #f1f5f9;
+}
+
+.dark-mode .input-group input {
+    background: #334155;
+    border-color: #475569;
+    color: #f1f5f9;
+}
+
+.dark-mode .input-group input:focus {
+    border-color: #76b900;
+    background: #475569;
+}
+
+.dark-mode .input-group input::placeholder {
+    color: #94a3b8;
+}
+
+.dark-mode .input-group input.error {
+    border-color: #ef4444;
+    background: #450a0a;
+}
+
+.dark-mode .input-group input.error:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.dark-mode .viz-header h2, .dark-mode .hex-section h3 {
+    color: #f1f5f9;
+}
+
+.dark-mode .bit-count, .dark-mode .max-value {
+    color: #cbd5e0;
+}
+
+.dark-mode .bit-display, .dark-mode .hex-display {
+    background: #334155;
+    border-color: #475569;
+}
+
+.dark-mode .bit-display .bit.zero {
+    background: #475569 !important;
+    color: #cbd5e0 !important;
+    border-color: #64748b !important;
+}
+
+.dark-mode .bit-display .bit.one {
+    background: #1e40af !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+.dark-mode .bit-display .bit.zero:hover {
+    background: #64748b !important;
+}
+
+.dark-mode .bit-display .bit.one:hover {
+    background: #2563eb !important;
+}
+
+.dark-mode .hex-char {
+    background: #166534;
+    color: #dcfce7;
+    border-color: #76b900;
+}
+
+.dark-mode .hex-char:hover {
+    background: #15803d;
+}
+
+/* Media query for system preference (fallback) */
 @media (prefers-color-scheme: dark) {
-    body {
-        background: #0f172a;
-        color: #f1f5f9;
-    }
-    
-    .converter-panel {
-        background: #1e293b;
-        border-color: #334155;
-    }
-    
-    .controls-section {
-        background: #334155;
-        border-color: #475569;
-    }
-    
-    .toggle-label {
-        color: #f1f5f9;
-    }
-    
-    .input-group label {
-        color: #f1f5f9;
-    }
-    
-    .input-group input {
-        background: #334155;
-        border-color: #475569;
-        color: #f1f5f9;
-    }
-    
-    .input-group input:focus {
-        border-color: #76b900;
-        background: #475569;
-    }
-    
-    .input-group input::placeholder {
-        color: #94a3b8;
-    }
-    
-    .input-group input.error {
-        border-color: #ef4444;
-        background: #450a0a;
-    }
-    
-    .input-group input.error:focus {
-        border-color: #ef4444;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-    
-    .viz-header h2, .hex-section h3 {
-        color: #f1f5f9;
-    }
-    
-    .bit-count, .max-value {
-        color: #cbd5e0;
-    }
-    
-    .bit-display, .hex-display {
-        background: #334155;
-        border-color: #475569;
-    }
-    
-    .bit-display .bit.zero {
-        background: #475569 !important;
-        color: #cbd5e0 !important;
-        border-color: #64748b !important;
-    }
-    
-    .bit-display .bit.one {
-        background: #1e40af !important;
-        color: #ffffff !important;
-        border-color: #3b82f6 !important;
-    }
-
-    .bit-display .bit.zero:hover {
-        background: #64748b !important;
-    }
-
-    .bit-display .bit.one:hover {
-        background: #2563eb !important;
-    }
-
-    .hex-char {
-        background: #166534;
-        color: #dcfce7;
-        border-color: #76b900;
-    }
-
-    .hex-char:hover {
-        background: #15803d;
+    body:not(.dark-mode) {
+        /* Apply dark mode styles if no explicit class is set */
     }
 } 

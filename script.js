@@ -7,11 +7,15 @@ class BitConverter {
         this.hexDisplay = document.getElementById('hexDisplay');
         this.tooltip = document.getElementById('tooltip');
         this.bitWidthToggle = document.getElementById('bitWidthToggle');
+        this.darkModeToggle = document.getElementById('darkModeToggle');
         this.bitCount = document.getElementById('bitCount');
         this.maxValueDisplay = document.getElementById('maxValueDisplay');
         
-        this.is64Bit = false;
+        // Load cached states
+        this.loadCachedStates();
+        
         this.updateBitWidth();
+        this.updateDarkMode();
         
         this.init();
     }
@@ -22,9 +26,36 @@ class BitConverter {
         this.hexInput.addEventListener('input', (e) => this.onHexChange(e));
         this.binaryInput.addEventListener('input', (e) => this.onBinaryChange(e));
         this.bitWidthToggle.addEventListener('change', (e) => this.onBitWidthChange(e));
+        this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
         
         // Initialize with default value
         this.updateAll(0n);
+    }
+    
+    loadCachedStates() {
+        // Load bit width preference (default to 32-bit)
+        const cached64Bit = localStorage.getItem('bitview-64bit');
+        this.is64Bit = cached64Bit === 'true';
+        this.bitWidthToggle.checked = this.is64Bit;
+        
+        // Load dark mode preference (default to light mode)
+        const cachedDarkMode = localStorage.getItem('bitview-darkmode');
+        this.isDarkMode = cachedDarkMode === 'true';
+        this.darkModeToggle.checked = this.isDarkMode;
+    }
+    
+    onDarkModeChange(e) {
+        this.isDarkMode = e.target.checked;
+        this.updateDarkMode();
+        localStorage.setItem('bitview-darkmode', this.isDarkMode);
+    }
+    
+    updateDarkMode() {
+        if (this.isDarkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
     }
     
     updateBitWidth() {
@@ -39,6 +70,7 @@ class BitConverter {
     onBitWidthChange(e) {
         this.is64Bit = e.target.checked;
         this.updateBitWidth();
+        localStorage.setItem('bitview-64bit', this.is64Bit);
         
         // Get current value and update if it exceeds new max
         const currentValue = this.getCurrentValue();
