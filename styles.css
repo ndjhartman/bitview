@@ -448,6 +448,14 @@ input:checked + .slider:before {
     color: #f1f5f9;
 }
 
+.dark-mode header h1 {
+    color: #f1f5f9;
+}
+
+.dark-mode header p {
+    color: #cbd5e0;
+}
+
 .dark-mode .converter-panel {
     background: #1e293b;
     border-color: #334155;
