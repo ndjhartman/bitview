@@ -444,7 +444,7 @@ input:checked + .slider:before {
 
 /* Dark mode support */
 .dark-mode {
-    background: #0f172a;
+    background: #1a1a1a;
     color: #f1f5f9;
 }
 
@@ -457,13 +457,13 @@ input:checked + .slider:before {
 }
 
 .dark-mode .converter-panel {
-    background: #1e293b;
-    border-color: #334155;
+    background: #2a2a2a;
+    border-color: #404040;
 }
 
 .dark-mode .controls-section {
-    background: #334155;
-    border-color: #475569;
+    background: #404040;
+    border-color: #555555;
 }
 
 .dark-mode .toggle-label {
@@ -475,14 +475,14 @@ input:checked + .slider:before {
 }
 
 .dark-mode .input-group input {
-    background: #334155;
-    border-color: #475569;
+    background: #404040;
+    border-color: #555555;
     color: #f1f5f9;
 }
 
 .dark-mode .input-group input:focus {
     border-color: #76b900;
-    background: #475569;
+    background: #555555;
 }
 
 .dark-mode .input-group input::placeholder {
@@ -508,14 +508,14 @@ input:checked + .slider:before {
 }
 
 .dark-mode .bit-display, .dark-mode .hex-display {
-    background: #334155;
-    border-color: #475569;
+    background: #404040;
+    border-color: #555555;
 }
 
 .dark-mode .bit-display .bit.zero {
-    background: #475569 !important;
+    background: #555555 !important;
     color: #cbd5e0 !important;
-    border-color: #64748b !important;
+    border-color: #666666 !important;
 }
 
 .dark-mode .bit-display .bit.one {
@@ -525,7 +525,7 @@ input:checked + .slider:before {
 }
 
 .dark-mode .bit-display .bit.zero:hover {
-    background: #64748b !important;
+    background: #666666 !important;
 }
 
 .dark-mode .bit-display .bit.one:hover {
@@ -533,15 +533,15 @@ input:checked + .slider:before {
 }
 
 .dark-mode .hex-char {
-    background: #475569;
+    background: #555555;
     color: #cbd5e0;
-    border-color: #64748b;
+    border-color: #666666;
 }
 
 .dark-mode .hex-char.zero {
-    background: #475569;
+    background: #555555;
     color: #cbd5e0;
-    border-color: #64748b;
+    border-color: #666666;
 }
 
 .dark-mode .hex-char.nonzero {
@@ -556,7 +556,7 @@ input:checked + .slider:before {
 }
 
 .dark-mode .hex-char.zero:hover {
-    background: #64748b;
+    background: #666666;
 }
 
 .dark-mode .hex-char.nonzero:hover {
