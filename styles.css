@@ -60,9 +60,10 @@ main {
     display: flex;
     justify-content: center;
     gap: 3rem;
+    flex-wrap: wrap;
 }
 
-.bit-width-toggle, .dark-mode-toggle {
+.bit-width-toggle, .twos-complement-toggle, .dark-mode-toggle {
     display: flex;
     align-items: center;
 }
@@ -265,6 +266,11 @@ input:checked + .slider:before {
     background: #5a7c00 !important;
 }
 
+/* Add spacing between bit groups (every 4 bits) */
+.bit-display .bit:nth-child(4n):not(:last-child) {
+    margin-right: 8px;
+}
+
 /* Hex section */
 .hex-section {
     margin-top: 2rem;
@@ -407,6 +413,12 @@ input:checked + .slider:before {
         flex-direction: column;
         gap: 0.5rem;
         align-items: flex-start;
+    }
+}
+
+@media (max-width: 992px) {
+    .controls-section {
+        gap: 2rem;
     }
 }
 

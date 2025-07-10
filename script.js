@@ -7,6 +7,7 @@ class BitConverter {
         this.hexDisplay = document.getElementById('hexDisplay');
         this.tooltip = document.getElementById('tooltip');
         this.bitWidthToggle = document.getElementById('bitWidthToggle');
+        this.twosComplementToggle = document.getElementById('twosComplementToggle');
         this.darkModeToggle = document.getElementById('darkModeToggle');
         this.bitCount = document.getElementById('bitCount');
         this.maxValueDisplay = document.getElementById('maxValueDisplay');
@@ -26,6 +27,7 @@ class BitConverter {
         this.hexInput.addEventListener('input', (e) => this.onHexChange(e));
         this.binaryInput.addEventListener('input', (e) => this.onBinaryChange(e));
         this.bitWidthToggle.addEventListener('change', (e) => this.onBitWidthChange(e));
+        this.twosComplementToggle.addEventListener('change', (e) => this.onTwosComplementChange(e));
         this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
         
         // Initialize with default value
@@ -37,6 +39,11 @@ class BitConverter {
         const cached64Bit = localStorage.getItem('bitview-64bit');
         this.is64Bit = cached64Bit === 'true';
         this.bitWidthToggle.checked = this.is64Bit;
+        
+        // Load two's complement preference (default to unsigned)
+        const cachedTwosComplement = localStorage.getItem('bitview-twoscomplement');
+        this.isTwosComplement = cachedTwosComplement === 'true';
+        this.twosComplementToggle.checked = this.isTwosComplement;
         
         // Load dark mode preference (default to light mode)
         const cachedDarkMode = localStorage.getItem('bitview-darkmode');
@@ -60,13 +67,37 @@ class BitConverter {
     
     updateBitWidth() {
         this.bitWidth = this.is64Bit ? 64 : 32;
-        this.maxValue = this.is64Bit ? 0xFFFFFFFFFFFFFFFFn : 0xFFFFFFFFn;
+        
+        if (this.isTwosComplement) {
+            this.maxValue = this.is64Bit ? 0x7FFFFFFFFFFFFFFFn : 0x7FFFFFFFn;
+            this.minValue = this.is64Bit ? -0x8000000000000000n : -0x80000000n;
+        } else {
+            this.maxValue = this.is64Bit ? 0xFFFFFFFFFFFFFFFFn : 0xFFFFFFFFn;
+            this.minValue = 0n;
+        }
         
         // Update display
         this.bitCount.textContent = `${this.bitWidth} bits`;
-        this.maxValueDisplay.textContent = `Max: ${this.maxValue.toLocaleString()}`;
+        const rangeText = this.isTwosComplement ? 
+            `Range: ${this.minValue.toLocaleString()} to ${this.maxValue.toLocaleString()}` :
+            `Max: ${this.maxValue.toLocaleString()}`;
+        this.maxValueDisplay.textContent = rangeText;
     }
-    
+
+    onTwosComplementChange(e) {
+        this.isTwosComplement = e.target.checked;
+        this.updateBitWidth();
+        localStorage.setItem('bitview-twoscomplement', this.isTwosComplement);
+        
+        // Get current value and update if it's outside the new range
+        const currentValue = this.getCurrentValue();
+        if (currentValue > this.maxValue || currentValue < this.minValue) {
+            this.updateAll(0n);
+        } else {
+            this.updateAll(currentValue);
+        }
+    }
+
     onBitWidthChange(e) {
         this.is64Bit = e.target.checked;
         this.updateBitWidth();
@@ -74,7 +105,7 @@ class BitConverter {
         
         // Get current value and update if it exceeds new max
         const currentValue = this.getCurrentValue();
-        if (currentValue > this.maxValue) {
+        if (currentValue > this.maxValue || currentValue < this.minValue) {
             this.updateAll(0n);
         } else {
             this.updateAll(currentValue);
@@ -84,7 +115,11 @@ class BitConverter {
     getCurrentValue() {
         try {
             const decimalValue = this.decimalInput.value.trim();
-            return decimalValue ? BigInt(decimalValue) : 0n;
+            if (!decimalValue) return 0n;
+            
+            // Remove commas for processing
+            const cleanValue = decimalValue.replace(/,/g, '');
+            return BigInt(cleanValue);
         } catch {
             return 0n;
         }
@@ -97,9 +132,12 @@ class BitConverter {
             return;
         }
         
+        // Remove commas for processing
+        const cleanValue = value.replace(/,/g, '');
+        
         try {
-            const bigIntValue = BigInt(value);
-            if (bigIntValue >= 0n && bigIntValue <= this.maxValue) {
+            const bigIntValue = BigInt(cleanValue);
+            if (bigIntValue >= this.minValue && bigIntValue <= this.maxValue) {
                 this.updateAll(bigIntValue, 'decimal');
             }
         } catch {
@@ -157,10 +195,17 @@ class BitConverter {
     }
     
     updateAll(value, source = '') {
+        // Handle two's complement conversion for display
+        let displayValue = value;
+        
         // Convert BigInt to string for display
-        const valueStr = value.toString();
-        const hexStr = '0x' + value.toString(16).toUpperCase();
-        const binaryStr = value.toString(2).padStart(this.bitWidth, '0');
+        const valueStr = displayValue.toString();
+        const hexStr = '0x' + (displayValue < 0n ? 
+            (BigInt(1) << BigInt(this.bitWidth)) + displayValue : displayValue)
+            .toString(16).toUpperCase().padStart(this.bitWidth / 4, '0');
+        const binaryStr = (displayValue < 0n ? 
+            (BigInt(1) << BigInt(this.bitWidth)) + displayValue : displayValue)
+            .toString(2).padStart(this.bitWidth, '0');
         
         // Update input fields
         if (source !== 'decimal') {
@@ -174,12 +219,14 @@ class BitConverter {
         }
         
         // Update visualizations
-        this.updateBitDisplay(value);
-        this.updateHexDisplay(value);
+        this.updateBitDisplay(displayValue);
+        this.updateHexDisplay(displayValue);
     }
     
     updateBitDisplay(value) {
-        const binaryString = value.toString(2).padStart(this.bitWidth, '0');
+        const binaryValue = value < 0n ? 
+            (BigInt(1) << BigInt(this.bitWidth)) + value : value;
+        const binaryString = binaryValue.toString(2).padStart(this.bitWidth, '0');
         this.bitDisplay.innerHTML = '';
         
         for (let i = 0; i < this.bitWidth; i++) {
@@ -195,13 +242,31 @@ class BitConverter {
             bitElement.addEventListener('mouseenter', (e) => this.showBitTooltip(e, bitPosition));
             bitElement.addEventListener('mouseleave', () => this.hideTooltip());
             
+            // Add click event listener for bit toggling
+            bitElement.addEventListener('click', (e) => this.toggleBit(bitPosition));
+            
             this.bitDisplay.appendChild(bitElement);
+        }
+    }
+
+    toggleBit(bitPosition) {
+        const currentValue = this.getCurrentValue();
+        const bitValue = 2n ** BigInt(bitPosition);
+        
+        // Toggle the bit
+        const newValue = currentValue ^ bitValue;
+        
+        // Check if the new value is within range
+        if (newValue >= this.minValue && newValue <= this.maxValue) {
+            this.updateAll(newValue);
         }
     }
     
     updateHexDisplay(value) {
         const hexDigits = this.is64Bit ? 16 : 8;
-        const hexString = value.toString(16).toUpperCase().padStart(hexDigits, '0');
+        const hexValue = value < 0n ? 
+            (BigInt(1) << BigInt(this.bitWidth)) + value : value;
+        const hexString = hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
         this.hexDisplay.innerHTML = '';
         
         for (let i = 0; i < hexString.length; i++) {
@@ -344,8 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let isValid = false;
             try {
                 if (input === converter.decimalInput) {
-                    const bigIntValue = BigInt(value);
-                    isValid = bigIntValue >= 0n && bigIntValue <= converter.maxValue;
+                    const cleanValue = value.replace(/,/g, '');
+                    const bigIntValue = BigInt(cleanValue);
+                    isValid = bigIntValue >= converter.minValue && bigIntValue <= converter.maxValue;
                 } else if (input === converter.hexInput) {
                     let hexValue = value.toLowerCase();
                     if (hexValue.startsWith('0x')) {
