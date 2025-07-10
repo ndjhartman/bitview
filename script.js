@@ -111,6 +111,15 @@ class BitConverter {
             return;
         }
         
+        // Handle partial negative input (just "-")
+        if (value === '-') {
+            // Don't update the display, but set two's complement mode and update mode display
+            this.isTwosComplement = true;
+            const modeText = 'Two\'s Complement';
+            this.maxValueDisplay.textContent = `Mode: ${modeText}`;
+            return;
+        }
+        
         // Remove commas for processing
         const cleanValue = value.replace(/,/g, '');
         
@@ -173,6 +182,21 @@ class BitConverter {
         }
     }
     
+    getActualBitsNeeded(value) {
+        // Return the actual minimum bits needed (before rounding to groups of 4)
+        if (value === 0n) return 1; // 0 needs 1 bit
+        
+        if (value < 0n) {
+            // For negative numbers in two's complement
+            const absValue = -value;
+            const bitLength = absValue.toString(2).length;
+            return bitLength + 1; // Need one more bit for sign
+        } else {
+            // For positive numbers
+            return value.toString(2).length;
+        }
+    }
+
     updateAll(value, source = '') {
         // Automatically determine mode based on value
         this.isTwosComplement = value < 0n;
@@ -193,6 +217,7 @@ class BitConverter {
         // Handle two's complement conversion for display
         let displayValue = value;
         const displayBits = this.getMinimumBitsNeeded(displayValue);
+        const actualBitsNeeded = this.getActualBitsNeeded(displayValue);
         
         // Convert BigInt to string for display
         const valueStr = displayValue.toString();
@@ -214,8 +239,8 @@ class BitConverter {
             this.binaryInput.value = binaryStr;
         }
         
-        // Update bit count display
-        this.bitCount.textContent = `${displayBits} bits`;
+        // Update bit count display - show actual bits needed
+        this.bitCount.textContent = `${actualBitsNeeded} bits`;
         
         // Update visualizations
         this.updateBitDisplay(displayValue);
@@ -465,11 +490,16 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (input === converter.decimalInput) {
                     const cleanValue = value.replace(/,/g, '');
-                    try {
-                        const bigIntValue = BigInt(cleanValue);
-                        isValid = true; // Any valid BigInt is acceptable
-                    } catch {
-                        isValid = false;
+                    // Allow just "-" for typing negative numbers
+                    if (cleanValue === '-') {
+                        isValid = true;
+                    } else {
+                        try {
+                            const bigIntValue = BigInt(cleanValue);
+                            isValid = true; // Any valid BigInt is acceptable
+                        } catch {
+                            isValid = false;
+                        }
                     }
                 } else if (input === converter.hexInput) {
                     let hexValue = value.toLowerCase();
