@@ -63,7 +63,7 @@ main {
     flex-wrap: wrap;
 }
 
-.twos-complement-toggle, .dark-mode-toggle {
+.dark-mode-toggle {
     display: flex;
     align-items: center;
 }
@@ -219,8 +219,8 @@ input:checked + .slider:before {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 3rem;
-    padding: 1.5rem;
+    margin-bottom: 4rem;
+    padding: 1.5rem 1.5rem 2.5rem 1.5rem;
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
@@ -232,6 +232,7 @@ input:checked + .slider:before {
     gap: 2px;
     flex-shrink: 0;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .bit-group-subscript {
@@ -299,7 +300,7 @@ input:checked + .slider:before {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 2.5rem 1.5rem;
     background: #f8fafc;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
@@ -311,6 +312,7 @@ input:checked + .slider:before {
     gap: 4px;
     flex-shrink: 0;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .hex-group-subscript {
@@ -407,7 +409,7 @@ input:checked + .slider:before {
     }
     
     .controls-section {
-        flex-direction: column;
+        justify-content: center;
         gap: 1.5rem;
         padding: 1rem 1.5rem;
     }
@@ -475,12 +477,6 @@ input:checked + .slider:before {
         flex-direction: column;
         gap: 0.5rem;
         align-items: flex-start;
-    }
-}
-
-@media (max-width: 992px) {
-    .controls-section {
-        gap: 2rem;
     }
 }
 
