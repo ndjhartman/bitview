@@ -123,8 +123,8 @@ input:checked + .slider:before {
 /* Input Section */
 .input-section {
     padding: 2rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
 }
 
@@ -150,7 +150,7 @@ input:checked + .slider:before {
     font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
     transition: all 0.2s ease;
     background: #fafafa;
-    min-width: 280px;
+    width: 100%;
 }
 
 .input-group input:focus {
