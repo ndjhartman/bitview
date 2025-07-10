@@ -84,6 +84,7 @@ class BitConverter {
     }
 
     getMinimumBitsNeeded(value) {
+        console.log('getMinimumBitsNeeded called with value:', value, 'isTwosComplement:', this.isTwosComplement);
         if (value === 0n) return 8; // Minimum 8 bits for display
         
         let minBits;
@@ -93,13 +94,16 @@ class BitConverter {
             const bitLength = absValue.toString(2).length;
             // We need at least one more bit than the magnitude for the sign
             minBits = bitLength + 1;
+            console.log('Negative number - absValue:', absValue, 'bitLength:', bitLength, 'minBits:', minBits);
         } else {
             // For positive numbers or unsigned mode
             minBits = value.toString(2).length;
+            console.log('Positive number - minBits:', minBits);
         }
         
         // Round up to nearest multiple of 4, with minimum of 8
         const roundedBits = Math.max(8, Math.ceil(minBits / 4) * 4);
+        console.log('Final roundedBits:', roundedBits);
         
         // Return the dynamic size (no fixed cap)
         return roundedBits;
@@ -112,19 +116,24 @@ class BitConverter {
             return;
         }
         
-        // Skip processing if just "-" (partial negative input)
-        if (value === '-') {
-            return;
-        }
-        
         // Remove commas for processing
         const cleanValue = value.replace(/,/g, '');
+        
+        // Handle partial negative input (just "-") - don't process but maintain state
+        if (cleanValue === '-') {
+            // Set the mode to two's complement but don't update displays yet
+            this.isTwosComplement = true;
+            const modeText = 'Two\'s Complement';
+            this.maxValueDisplay.textContent = `Mode: ${modeText}`;
+            return;
+        }
         
         try {
             const bigIntValue = BigInt(cleanValue);
             this.updateAll(bigIntValue, 'decimal');
-        } catch {
-            // Invalid input, ignore
+        } catch (error) {
+            // Invalid input, ignore but don't clear the display
+            console.log('Invalid decimal input:', cleanValue, error);
         }
     }
     
@@ -211,44 +220,52 @@ class BitConverter {
         const modeText = this.isTwosComplement ? 'Two\'s Complement' : 'Unsigned';
         this.maxValueDisplay.textContent = `Mode: ${modeText}`;
         
-        // Handle two's complement conversion for display
-        let displayValue = value;
-        const displayBits = this.getMinimumBitsNeeded(displayValue);
-        const actualBitsNeeded = this.getActualBitsNeeded(displayValue);
-        
-        // Convert BigInt to string for display
-        const valueStr = displayValue.toString();
-        const hexStr = '0x' + (displayValue < 0n ? 
-            (BigInt(1) << BigInt(displayBits)) + displayValue : displayValue)
-            .toString(16).toUpperCase().padStart(Math.ceil(displayBits / 4), '0');
-        const binaryStr = (displayValue < 0n ? 
-            (BigInt(1) << BigInt(displayBits)) + displayValue : displayValue)
-            .toString(2).padStart(displayBits, '0');
-        
-        // Update input fields
-        if (source !== 'decimal') {
-            this.decimalInput.value = valueStr;
+        try {
+            // Handle two's complement conversion for display
+            let displayValue = value;
+            const displayBits = this.getMinimumBitsNeeded(displayValue);
+            const actualBitsNeeded = this.getActualBitsNeeded(displayValue);
+            
+            // Convert BigInt to string for display
+            const valueStr = displayValue.toString();
+            const hexStr = '0x' + (displayValue < 0n ? 
+                (BigInt(1) << BigInt(displayBits)) + displayValue : displayValue)
+                .toString(16).toUpperCase().padStart(Math.ceil(displayBits / 4), '0');
+            const binaryStr = (displayValue < 0n ? 
+                (BigInt(1) << BigInt(displayBits)) + displayValue : displayValue)
+                .toString(2).padStart(displayBits, '0');
+            
+            // Update input fields
+            if (source !== 'decimal') {
+                this.decimalInput.value = valueStr;
+            }
+            if (source !== 'hex') {
+                this.hexInput.value = hexStr;
+            }
+            if (source !== 'binary') {
+                this.binaryInput.value = binaryStr;
+            }
+            
+            // Update bit count display - show rounded bits (nearest 4 bits)
+            this.bitCount.textContent = `${displayBits} bits`;
+            
+            // Update nibble count display
+            const nibbleCount = Math.ceil(displayBits / 4);
+            this.nibbleCount.textContent = `${nibbleCount} nibbles`;
+            
+            // Update visualizations
+            this.updateBitDisplay(displayValue);
+            this.updateHexDisplay(displayValue);
+            
+            // Update validation styling for all inputs
+            this.updateInputValidation();
+        } catch (error) {
+            console.error('Error in updateAll:', error);
+            // If there's an error, at least update the decimal input
+            if (source !== 'decimal') {
+                this.decimalInput.value = value.toString();
+            }
         }
-        if (source !== 'hex') {
-            this.hexInput.value = hexStr;
-        }
-        if (source !== 'binary') {
-            this.binaryInput.value = binaryStr;
-        }
-        
-        // Update bit count display - show rounded bits (nearest 4 bits)
-        this.bitCount.textContent = `${displayBits} bits`;
-        
-        // Update nibble count display
-        const nibbleCount = Math.ceil(displayBits / 4);
-        this.nibbleCount.textContent = `${nibbleCount} nibbles`;
-        
-        // Update visualizations
-        this.updateBitDisplay(displayValue);
-        this.updateHexDisplay(displayValue);
-        
-        // Update validation styling for all inputs
-        this.updateInputValidation();
     }
 
     updateInputValidation() {
@@ -260,10 +277,14 @@ class BitConverter {
     }
     
     updateBitDisplay(value) {
+        console.log('updateBitDisplay called with value:', value);
         const displayBits = this.getMinimumBitsNeeded(value);
+        console.log('displayBits:', displayBits);
         const binaryValue = value < 0n ? 
             (BigInt(1) << BigInt(displayBits)) + value : value;
+        console.log('binaryValue:', binaryValue);
         const binaryString = binaryValue.toString(2).padStart(displayBits, '0');
+        console.log('binaryString:', binaryString);
         this.bitDisplay.innerHTML = '';
         
         // Create bit groups of 4
@@ -311,6 +332,7 @@ class BitConverter {
             
             this.bitDisplay.appendChild(groupElement);
         }
+        console.log('updateBitDisplay completed');
     }
 
     toggleBit(bitPosition) {
