@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitView - Number Base Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BitView</h1>
+            <p>Professional Number Base Converter</p>
+        </header>
+        
+        <main>
+            <div class="converter-panel">
+                <div class="controls-section">
+                    <div class="bit-width-toggle">
+                        <label class="toggle-label">
+                            <span>32-bit</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="bitWidthToggle">
+                                <span class="slider"></span>
+                            </div>
+                            <span>64-bit</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="decimal">Decimal</label>
+                        <input type="text" id="decimal" placeholder="Enter decimal number">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="hex">Hexadecimal</label>
+                        <input type="text" id="hex" placeholder="Enter hex number (0x...)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="binary">Binary</label>
+                        <input type="text" id="binary" placeholder="Enter binary number">
+                    </div>
+                </div>
+                
+                <div class="visualization-section">
+                    <div class="viz-header">
+                        <h2>Binary Visualization</h2>
+                        <div class="bit-info">
+                            <span class="bit-count" id="bitCount">32 bits</span>
+                            <span class="max-value" id="maxValueDisplay">Max: 4,294,967,295</span>
+                        </div>
+                    </div>
+                    <div class="bit-display" id="bitDisplay"></div>
+                    
+                    <div class="hex-section">
+                        <h3>Hexadecimal Breakdown</h3>
+                        <div class="hex-display" id="hexDisplay"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
+
