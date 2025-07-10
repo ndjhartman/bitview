@@ -6,7 +6,6 @@ class BitConverter {
         this.bitDisplay = document.getElementById('bitDisplay');
         this.hexDisplay = document.getElementById('hexDisplay');
         this.tooltip = document.getElementById('tooltip');
-        this.bitWidthToggle = document.getElementById('bitWidthToggle');
         this.twosComplementToggle = document.getElementById('twosComplementToggle');
         this.darkModeToggle = document.getElementById('darkModeToggle');
         this.bitCount = document.getElementById('bitCount');
@@ -15,8 +14,8 @@ class BitConverter {
         // Load cached states
         this.loadCachedStates();
         
-        // Initialize bit width and modes
-        this.updateBitWidth();
+        // Initialize modes
+        this.updateRanges();
         this.updateDarkMode();
         
         this.init();
@@ -27,7 +26,6 @@ class BitConverter {
         this.decimalInput.addEventListener('input', (e) => this.onDecimalChange(e));
         this.hexInput.addEventListener('input', (e) => this.onHexChange(e));
         this.binaryInput.addEventListener('input', (e) => this.onBinaryChange(e));
-        this.bitWidthToggle.addEventListener('change', (e) => this.onBitWidthChange(e));
         this.twosComplementToggle.addEventListener('change', (e) => this.onTwosComplementChange(e));
         this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
         
@@ -36,11 +34,6 @@ class BitConverter {
     }
     
     loadCachedStates() {
-        // Load bit width preference (default to 32-bit)
-        const cached64Bit = localStorage.getItem('bitview-64bit');
-        this.is64Bit = cached64Bit === 'true';
-        this.bitWidthToggle.checked = this.is64Bit;
-        
         // Load two's complement preference (default to unsigned)
         const cachedTwosComplement = localStorage.getItem('bitview-twoscomplement');
         this.isTwosComplement = cachedTwosComplement === 'true';
@@ -66,28 +59,26 @@ class BitConverter {
         }
     }
     
-    updateBitWidth() {
-        this.bitWidth = this.is64Bit ? 64 : 32;
-        
+    updateRanges() {
+        // Remove fixed bit width constraints - use JavaScript's BigInt maximum safe values
         if (this.isTwosComplement) {
-            this.maxValue = this.is64Bit ? 0x7FFFFFFFFFFFFFFFn : 0x7FFFFFFFn;
-            this.minValue = this.is64Bit ? -0x8000000000000000n : -0x80000000n;
+            // For two's complement, we'll use reasonable limits that can be displayed
+            this.maxValue = 0x7FFFFFFFFFFFFFFFn; // 64-bit signed max
+            this.minValue = -0x8000000000000000n; // 64-bit signed min
         } else {
-            this.maxValue = this.is64Bit ? 0xFFFFFFFFFFFFFFFFn : 0xFFFFFFFFn;
+            // For unsigned, use a very large but reasonable limit
+            this.maxValue = 0xFFFFFFFFFFFFFFFFn; // 64-bit unsigned max
             this.minValue = 0n;
         }
         
-        // Update display
-        this.bitCount.textContent = `${this.bitWidth} bits`;
-        const rangeText = this.isTwosComplement ? 
-            `Range: ${this.minValue.toLocaleString()} to ${this.maxValue.toLocaleString()}` :
-            `Max: ${this.maxValue.toLocaleString()}`;
-        this.maxValueDisplay.textContent = rangeText;
+        // Update display - show mode instead of fixed bit count
+        const modeText = this.isTwosComplement ? 'Two\'s Complement' : 'Unsigned';
+        this.maxValueDisplay.textContent = `Mode: ${modeText}`;
     }
 
     onTwosComplementChange(e) {
         this.isTwosComplement = e.target.checked;
-        this.updateBitWidth();
+        this.updateRanges();
         localStorage.setItem('bitview-twoscomplement', this.isTwosComplement);
         
         // Get current value and update if it's outside the new range
@@ -99,20 +90,6 @@ class BitConverter {
         }
     }
 
-    onBitWidthChange(e) {
-        this.is64Bit = e.target.checked;
-        this.updateBitWidth();
-        localStorage.setItem('bitview-64bit', this.is64Bit);
-        
-        // Get current value and update if it exceeds new max
-        const currentValue = this.getCurrentValue();
-        if (currentValue > this.maxValue || currentValue < this.minValue) {
-            this.updateAll(0n);
-        } else {
-            this.updateAll(currentValue);
-        }
-    }
-    
     getCurrentValue() {
         try {
             const decimalValue = this.decimalInput.value.trim();
@@ -144,8 +121,8 @@ class BitConverter {
         // Round up to nearest multiple of 4, with minimum of 8
         const roundedBits = Math.max(8, Math.ceil(minBits / 4) * 4);
         
-        // Cap at current bit width setting
-        return Math.min(roundedBits, this.bitWidth);
+        // Return the dynamic size (no fixed cap)
+        return roundedBits;
     }
     
     onDecimalChange(e) {
@@ -225,10 +202,10 @@ class BitConverter {
         // Convert BigInt to string for display
         const valueStr = displayValue.toString();
         const hexStr = '0x' + (displayValue < 0n ? 
-            (BigInt(1) << BigInt(this.bitWidth)) + displayValue : displayValue)
+            (BigInt(1) << BigInt(displayBits)) + displayValue : displayValue)
             .toString(16).toUpperCase().padStart(Math.ceil(displayBits / 4), '0');
         const binaryStr = (displayValue < 0n ? 
-            (BigInt(1) << BigInt(this.bitWidth)) + displayValue : displayValue)
+            (BigInt(1) << BigInt(displayBits)) + displayValue : displayValue)
             .toString(2).padStart(displayBits, '0');
         
         // Update input fields
@@ -243,7 +220,7 @@ class BitConverter {
         }
         
         // Update bit count display
-        this.bitCount.textContent = `${displayBits} bits (max ${this.bitWidth})`;
+        this.bitCount.textContent = `${displayBits} bits`;
         
         // Update visualizations
         this.updateBitDisplay(displayValue);
@@ -253,7 +230,7 @@ class BitConverter {
     updateBitDisplay(value) {
         const displayBits = this.getMinimumBitsNeeded(value);
         const binaryValue = value < 0n ? 
-            (BigInt(1) << BigInt(this.bitWidth)) + value : value;
+            (BigInt(1) << BigInt(displayBits)) + value : value;
         const binaryString = binaryValue.toString(2).padStart(displayBits, '0');
         this.bitDisplay.innerHTML = '';
         
@@ -307,7 +284,7 @@ class BitConverter {
         const displayBits = this.getMinimumBitsNeeded(value);
         const hexDigits = Math.ceil(displayBits / 4);
         const hexValue = value < 0n ? 
-            (BigInt(1) << BigInt(this.bitWidth)) + value : value;
+            (BigInt(1) << BigInt(displayBits)) + value : value;
         const hexString = hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
         this.hexDisplay.innerHTML = '';
         
@@ -408,15 +385,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         e.target.select();
                     }
                     break;
-                case '1':
+                case 't':
                     e.preventDefault();
-                    converter.bitWidthToggle.checked = false;
-                    converter.bitWidthToggle.dispatchEvent(new Event('change'));
-                    break;
-                case '2':
-                    e.preventDefault();
-                    converter.bitWidthToggle.checked = true;
-                    converter.bitWidthToggle.dispatchEvent(new Event('change'));
+                    converter.twosComplementToggle.checked = !converter.twosComplementToggle.checked;
+                    converter.twosComplementToggle.dispatchEvent(new Event('change'));
                     break;
             }
         }
@@ -461,12 +433,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (/^[0-9a-f]*$/.test(hexValue)) {
                         const bigIntValue = BigInt('0x' + hexValue);
-                        isValid = bigIntValue <= converter.maxValue;
+                        isValid = bigIntValue >= converter.minValue && bigIntValue <= converter.maxValue;
                     }
                 } else if (input === converter.binaryInput) {
                     if (/^[01]*$/.test(value)) {
                         const bigIntValue = BigInt('0b' + value);
-                        isValid = bigIntValue <= converter.maxValue;
+                        isValid = bigIntValue >= converter.minValue && bigIntValue <= converter.maxValue;
                     }
                 }
             } catch {

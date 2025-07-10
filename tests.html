@@ -114,30 +114,21 @@
     <script>
         // Comprehensive test cases
         const TEST_CASES = {
-            basic32: [
-                { decimal: '0', hex: '0x00000000', binary: '00000000000000000000000000000000' },
-                { decimal: '1', hex: '0x00000001', binary: '00000000000000000000000000000001' },
-                { decimal: '15', hex: '0x0000000F', binary: '00000000000000000000000000001111' },
-                { decimal: '16', hex: '0x00000010', binary: '00000000000000000000000000010000' },
-                { decimal: '255', hex: '0x000000FF', binary: '00000000000000000000000011111111' },
-                { decimal: '256', hex: '0x00000100', binary: '00000000000000000000000100000000' },
-                { decimal: '65535', hex: '0x0000FFFF', binary: '00000000000000001111111111111111' },
-                { decimal: '65536', hex: '0x00010000', binary: '00000000000000010000000000000000' },
-                { decimal: '16777215', hex: '0x00FFFFFF', binary: '00000000111111111111111111111111' },
-                { decimal: '16777216', hex: '0x01000000', binary: '00000001000000000000000000000000' },
+            basicConversions: [
+                { decimal: '0', hex: '0x00', binary: '00000000' },
+                { decimal: '1', hex: '0x01', binary: '00000001' },
+                { decimal: '15', hex: '0x0F', binary: '00001111' },
+                { decimal: '16', hex: '0x10', binary: '00010000' },
+                { decimal: '255', hex: '0xFF', binary: '11111111' },
+                { decimal: '256', hex: '0x0100', binary: '000100000000' },
+                { decimal: '65535', hex: '0xFFFF', binary: '1111111111111111' },
+                { decimal: '65536', hex: '0x00010000', binary: '000100000000000000000000' },
+                { decimal: '16777215', hex: '0x00FFFFFF', binary: '000000000111111111111111111111111111' },
+                { decimal: '16777216', hex: '0x01000000', binary: '000100000000000000000000000000000000' },
                 { decimal: '4294967295', hex: '0xFFFFFFFF', binary: '11111111111111111111111111111111' }
             ],
             
-            basic64: [
-                { decimal: '0', hex: '0x0000000000000000', binary: '0000000000000000000000000000000000000000000000000000000000000000' },
-                { decimal: '1', hex: '0x0000000000000001', binary: '0000000000000000000000000000000000000000000000000000000000000001' },
-                { decimal: '4294967295', hex: '0x00000000FFFFFFFF', binary: '0000000000000000000000000000000011111111111111111111111111111111' },
-                { decimal: '4294967296', hex: '0x0000000100000000', binary: '0000000000000000000000000000000100000000000000000000000000000000' },
-                { decimal: '1099511627775', hex: '0x000000FFFFFFFFFF', binary: '0000000000000000000000001111111111111111111111111111111111111111' },
-                { decimal: '18446744073709551615', hex: '0xFFFFFFFFFFFFFFFF', binary: '1111111111111111111111111111111111111111111111111111111111111111' }
-            ],
-            
-            powersOf2_32: [
+            powersOf2: [
                 { decimal: '1', power: 0 },
                 { decimal: '2', power: 1 },
                 { decimal: '4', power: 2 },
@@ -155,21 +146,12 @@
                 { decimal: '16384', power: 14 },
                 { decimal: '32768', power: 15 },
                 { decimal: '65536', power: 16 },
-                { decimal: '2147483648', power: 31 }
-            ],
-            
-            signedBoundaries32: [
-                { decimal: '2147483647', hex: '0x7FFFFFFF', binary: '01111111111111111111111111111111', description: 'Max signed 32-bit' },
-                { decimal: '2147483648', hex: '0x80000000', binary: '10000000000000000000000000000000', description: 'Min signed 32-bit + 1' }
-            ],
-            
-            signedBoundaries64: [
-                { decimal: '9223372036854775807', hex: '0x7FFFFFFFFFFFFFFF', binary: '0111111111111111111111111111111111111111111111111111111111111111', description: 'Max signed 64-bit' },
-                { decimal: '9223372036854775808', hex: '0x8000000000000000', binary: '1000000000000000000000000000000000000000000000000000000000000000', description: 'Min signed 64-bit + 1' }
+                { decimal: '2147483648', power: 31 },
+                { decimal: '9223372036854775808', power: 63 }
             ],
             
             hexPatterns: [
-                { decimal: '43981', hex: '0x0000ABCD', binary: '00000000000000001010101111001101' },
+                { decimal: '43981', hex: '0xABCD', binary: '1010101111001101' },
                 { decimal: '3735928559', hex: '0xDEADBEEF', binary: '11011110101011011011111011101111' },
                 { decimal: '3405691582', hex: '0xCAFEBABE', binary: '11001010111111101011101010111110' },
                 { decimal: '4277009102', hex: '0xFEEDFACE', binary: '11111110111011011111101011001110' }
@@ -179,18 +161,19 @@
         // Mock BitConverter for comprehensive testing
         class TestBitConverter {
             constructor() {
-                this.is64Bit = false;
-                this.updateBitWidth();
+                this.updateRanges();
             }
 
-            updateBitWidth() {
-                this.bitWidth = this.is64Bit ? 64 : 32;
-                this.maxValue = this.is64Bit ? 0xFFFFFFFFFFFFFFFFn : 0xFFFFFFFFn;
+            updateRanges() {
+                // Use large ranges to accommodate dynamic sizing
+                this.maxValue = 0xFFFFFFFFFFFFFFFFn;
+                this.minValue = 0n;
             }
 
-            setBitWidth(is64Bit) {
-                this.is64Bit = is64Bit;
-                this.updateBitWidth();
+            getMinimumBitsNeeded(value) {
+                if (value === 0n) return 8; // Minimum 8 bits for display
+                const minBits = value.toString(2).length;
+                return Math.max(8, Math.ceil(minBits / 4) * 4);
             }
 
             // Convert decimal to hex
@@ -199,7 +182,8 @@
                 if (value < 0n || value > this.maxValue) {
                     throw new Error('Value out of range');
                 }
-                const hexDigits = this.is64Bit ? 16 : 8;
+                const displayBits = this.getMinimumBitsNeeded(value);
+                const hexDigits = Math.ceil(displayBits / 4);
                 return '0x' + value.toString(16).toUpperCase().padStart(hexDigits, '0');
             }
 
@@ -209,7 +193,8 @@
                 if (value < 0n || value > this.maxValue) {
                     throw new Error('Value out of range');
                 }
-                return value.toString(2).padStart(this.bitWidth, '0');
+                const displayBits = this.getMinimumBitsNeeded(value);
+                return value.toString(2).padStart(displayBits, '0');
             }
 
             // Convert hex to decimal
@@ -243,12 +228,13 @@
             // Test bit positions and values
             getBitPositions(decimalStr) {
                 const value = BigInt(decimalStr);
-                const binaryString = value.toString(2).padStart(this.bitWidth, '0');
+                const displayBits = this.getMinimumBitsNeeded(value);
+                const binaryString = value.toString(2).padStart(displayBits, '0');
                 const positions = [];
                 
-                for (let i = 0; i < this.bitWidth; i++) {
+                for (let i = 0; i < displayBits; i++) {
                     const bit = binaryString[i];
-                    const bitPosition = this.bitWidth - 1 - i;
+                    const bitPosition = displayBits - 1 - i;
                     const bitValue = 2n ** BigInt(bitPosition);
                     positions.push({ 
                         index: i, 
@@ -264,7 +250,8 @@
             // Test hex nibbles
             getHexNibbles(decimalStr) {
                 const value = BigInt(decimalStr);
-                const hexDigits = this.is64Bit ? 16 : 8;
+                const displayBits = this.getMinimumBitsNeeded(value);
+                const hexDigits = Math.ceil(displayBits / 4);
                 const hexString = value.toString(16).toUpperCase().padStart(hexDigits, '0');
                 const nibbles = [];
                 
@@ -341,8 +328,8 @@
             }
 
             // Test basic conversions
-            testBasicConversions(testCases, bitWidth, sectionName) {
-                this.converter.setBitWidth(bitWidth === 64);
+            testBasicConversions(testCases, sectionName) {
+                this.converter.updateRanges(); // Ensure ranges are updated for dynamic bit width
                 
                 testCases.forEach(testCase => {
                     const { decimal, hex, binary } = testCase;
@@ -357,7 +344,7 @@
 
             // Test powers of 2
             testPowersOf2(testCases, sectionName) {
-                this.converter.setBitWidth(false); // 32-bit
+                this.converter.updateRanges(); // Ensure ranges are updated for dynamic bit width
                 
                 testCases.forEach(testCase => {
                     const { decimal, power } = testCase;
@@ -379,7 +366,7 @@
 
             // Test bit positions for specific values
             testBitPositions(sectionName) {
-                this.converter.setBitWidth(false); // 32-bit
+                this.converter.updateRanges(); // Ensure ranges are updated for dynamic bit width
                 
                 const testCases = [
                     { value: '255', expectedBits: [0,1,2,3,4,5,6,7] },
@@ -407,7 +394,7 @@
 
             // Test hex nibbles
             testHexNibbles(sectionName) {
-                this.converter.setBitWidth(false); // 32-bit
+                this.converter.updateRanges(); // Ensure ranges are updated for dynamic bit width
                 
                 const testCases = [
                     { value: '255', expectedNibbles: [{ char: 'F', startBit: 4, endBit: 7 }, { char: 'F', startBit: 0, endBit: 3 }] },
@@ -485,21 +472,14 @@
                 this.results = [];
                 this.stats = { total: 0, passed: 0, failed: 0, errors: 0 };
                 
-                // Basic 32-bit conversions
-                this.testBasicConversions(TEST_CASES.basic32, 32, '32-bit Basic Conversions');
-                
-                // Basic 64-bit conversions
-                this.testBasicConversions(TEST_CASES.basic64, 64, '64-bit Basic Conversions');
+                // Basic conversions
+                this.testBasicConversions(TEST_CASES.basicConversions, 'Basic Conversions');
                 
                 // Powers of 2
-                this.testPowersOf2(TEST_CASES.powersOf2_32, 'Powers of 2 (32-bit)');
-                
-                // Signed boundaries
-                this.testBasicConversions(TEST_CASES.signedBoundaries32, 32, 'Signed Integer Boundaries (32-bit)');
-                this.testBasicConversions(TEST_CASES.signedBoundaries64, 64, 'Signed Integer Boundaries (64-bit)');
+                this.testPowersOf2(TEST_CASES.powersOf2, 'Powers of 2');
                 
                 // Hex patterns
-                this.testBasicConversions(TEST_CASES.hexPatterns, 32, 'Common Hex Patterns');
+                this.testBasicConversions(TEST_CASES.hexPatterns, 'Common Hex Patterns');
                 
                 // Bit position tests
                 this.testBitPositions('Bit Position Validation');

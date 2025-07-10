@@ -63,7 +63,7 @@ main {
     flex-wrap: wrap;
 }
 
-.bit-width-toggle, .twos-complement-toggle, .dark-mode-toggle {
+.twos-complement-toggle, .dark-mode-toggle {
     display: flex;
     align-items: center;
 }
