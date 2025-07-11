@@ -164,10 +164,8 @@ class BitConverter {
                 // Update mode display but don't process the incomplete input yet
                 const modeText = 'Two\'s Complement';
                 this.maxValueDisplay.textContent = `Mode: ${modeText}`;
-            } else {
-                // Prevent negative input in unsigned mode
-                e.target.value = '';
             }
+            // Don't clear the input - let validation handle the error styling
             return;
         }
         
@@ -222,7 +220,20 @@ class BitConverter {
         }
         
         try {
-            const bigIntValue = BigInt('0x' + cleanValue);
+            let bigIntValue = BigInt('0x' + cleanValue);
+            
+            // If two's complement is enabled, check if this should be interpreted as negative
+            if (this.isTwosComplement && cleanValue.length > 0) {
+                // Each hex digit represents 4 bits
+                const bitLength = cleanValue.length * 4;
+                const maxPositive = BigInt(1) << BigInt(bitLength - 1); // 2^(n-1)
+                if (bigIntValue >= maxPositive) {
+                    // This is a negative number in two's complement
+                    const totalRange = BigInt(1) << BigInt(bitLength); // 2^n
+                    bigIntValue = bigIntValue - totalRange;
+                }
+            }
+            
             this.updateAll(bigIntValue, 'hex');
         } catch {
             // Invalid input, ignore
@@ -242,7 +253,20 @@ class BitConverter {
         }
         
         try {
-            const bigIntValue = BigInt('0b' + value);
+            let bigIntValue = BigInt('0b' + value);
+            
+            // If two's complement is enabled and MSB is 1, interpret as negative
+            if (this.isTwosComplement && value.length > 0 && value[0] === '1') {
+                // Convert from two's complement to signed value
+                const bitLength = value.length;
+                const maxPositive = BigInt(1) << BigInt(bitLength - 1); // 2^(n-1)
+                if (bigIntValue >= maxPositive) {
+                    // This is a negative number in two's complement
+                    const totalRange = BigInt(1) << BigInt(bitLength); // 2^n
+                    bigIntValue = bigIntValue - totalRange;
+                }
+            }
+            
             this.updateAll(bigIntValue, 'binary');
         } catch {
             // Invalid input, ignore
