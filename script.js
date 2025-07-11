@@ -47,9 +47,9 @@ class BitConverter {
         this.bitCount.textContent = '8 bits';
         this.nibbleCount.textContent = '2 nibbles';
         
-        // Clear visualizations
-        this.bitDisplay.innerHTML = '<div class="empty-state">Enter a number to see binary representation</div>';
-        this.hexDisplay.innerHTML = '<div class="empty-state">Enter a number to see hex breakdown</div>';
+        // Show zero in visualizations instead of empty state
+        this.updateBitDisplay(0n);
+        this.updateHexDisplay(0n);
         
         // Remove any error styling
         this.updateInputValidation();
