@@ -367,6 +367,19 @@ input:checked + .slider:before {
     background: #5a7c00;
 }
 
+/* Empty state styling */
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 60px;
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
 /* Tooltip */
 .tooltip {
     position: absolute;
@@ -649,6 +662,11 @@ input:checked + .slider:before {
 
 .dark-mode .hex-char.nonzero:hover {
     background: #5a7c00;
+}
+
+/* Dark mode empty state styling */
+.dark-mode .empty-state {
+    color: #6b7280;
 }
 
 /* Bit groups in dark mode */

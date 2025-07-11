@@ -28,8 +28,28 @@ class BitConverter {
         this.binaryInput.addEventListener('input', (e) => this.onBinaryChange(e));
         this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
         
-        // Initialize with default value
-        this.updateAll(0n);
+        // Start with empty inputs to show placeholder text
+        this.initializeEmpty();
+    }
+    
+    initializeEmpty() {
+        // Clear all inputs to show placeholder text
+        this.decimalInput.value = '';
+        this.hexInput.value = '';
+        this.binaryInput.value = '';
+        
+        // Set up default display state
+        this.isTwosComplement = false;
+        this.maxValueDisplay.textContent = 'Mode: Unsigned';
+        this.bitCount.textContent = '8 bits';
+        this.nibbleCount.textContent = '2 nibbles';
+        
+        // Clear visualizations
+        this.bitDisplay.innerHTML = '<div class="empty-state">Enter a number to see binary representation</div>';
+        this.hexDisplay.innerHTML = '<div class="empty-state">Enter a number to see hex breakdown</div>';
+        
+        // Remove any error styling
+        this.updateInputValidation();
     }
     
     loadCachedStates() {
