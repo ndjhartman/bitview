@@ -22,6 +22,7 @@ class BitConverter {
     }
     
     init() {
+	console.log('init');
         // Add event listeners for input changes
         this.decimalInput.addEventListener('input', (e) => this.onDecimalChange(e));
         this.hexInput.addEventListener('input', (e) => this.onHexChange(e));
