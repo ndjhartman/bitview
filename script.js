@@ -170,13 +170,16 @@ class BitConverter {
             return;
         }
         
-        // Validate hex characters
-        if (!/^[0-9a-f]+$/.test(value)) {
+        // Remove underscores to ignore them
+        const cleanValue = value.replace(/_/g, '');
+        
+        // Validate hex characters (after removing underscores)
+        if (!/^[0-9a-f]+$/.test(cleanValue)) {
             return;
         }
         
         try {
-            const bigIntValue = BigInt('0x' + value);
+            const bigIntValue = BigInt('0x' + cleanValue);
             this.updateAll(bigIntValue, 'hex');
         } catch {
             // Invalid input, ignore
@@ -464,7 +467,7 @@ function formatNumber(num) {
 function validateInput(input, type) {
     const patterns = {
         decimal: /^-?\d+$/,  // Allow negative numbers
-        hex: /^(0x)?[0-9a-fA-F]+$/,
+        hex: /^(0x)?[0-9a-fA-F_]+$/,  // Allow underscores in hex
         binary: /^[01]+$/
     };
     
@@ -541,9 +544,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Allow empty hex after 0x removal, and validate hex characters
                     if (hexValue === '') {
                         isValid = true; // Allow empty hex for typing
-                    } else if (/^[0-9a-f]+$/.test(hexValue)) {
+                    } else if (/^[0-9a-f_]+$/.test(hexValue)) { // Allow underscores in hex
                         try {
-                            const bigIntValue = BigInt('0x' + hexValue);
+                            // Remove underscores before BigInt conversion
+                            const cleanHexValue = hexValue.replace(/_/g, '');
+                            const bigIntValue = BigInt('0x' + cleanHexValue);
                             isValid = true; // Any valid hex BigInt is acceptable
                         } catch (error) {
                             isValid = false; // BigInt conversion failed
