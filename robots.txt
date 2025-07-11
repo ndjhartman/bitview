@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /tests.html
+Disallow: /.git/
+
+# Sitemap location
+Sitemap: https://bitview.pages.dev/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1 
