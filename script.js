@@ -8,6 +8,7 @@ class BitConverter {
         this.hexDisplay = document.getElementById('hexDisplay');
         this.tooltip = document.getElementById('tooltip');
         this.darkModeToggle = document.getElementById('darkModeToggle');
+        this.twosComplementToggle = document.getElementById('twosComplementToggle');
         this.bitCount = document.getElementById('bitCount');
         this.nibbleCount = document.getElementById('nibbleCount');
         this.maxValueDisplay = document.getElementById('maxValueDisplay');
@@ -28,6 +29,7 @@ class BitConverter {
         this.hexInput.addEventListener('input', (e) => this.onHexChange(e));
         this.binaryInput.addEventListener('input', (e) => this.onBinaryChange(e));
         this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
+        this.twosComplementToggle.addEventListener('change', (e) => this.onTwosComplementChange(e));
         
         // Start with empty inputs to show placeholder text
         this.initializeEmpty();
@@ -58,12 +60,32 @@ class BitConverter {
         const cachedDarkMode = localStorage.getItem('bitview-darkmode');
         this.isDarkMode = cachedDarkMode === 'true';
         this.darkModeToggle.checked = this.isDarkMode;
+        
+        // Load two's complement preference (default to unsigned)
+        const cachedTwosComplement = localStorage.getItem('bitview-twoscomplement');
+        this.isTwosComplement = cachedTwosComplement === 'true';
+        this.twosComplementToggle.checked = this.isTwosComplement;
     }
     
     onDarkModeChange(e) {
         this.isDarkMode = e.target.checked;
         this.updateDarkMode();
         localStorage.setItem('bitview-darkmode', this.isDarkMode);
+    }
+    
+    onTwosComplementChange(e) {
+        this.isTwosComplement = e.target.checked;
+        this.updateRanges();
+        localStorage.setItem('bitview-twoscomplement', this.isTwosComplement);
+        
+        // If switching to unsigned mode and current value is negative, reset to 0
+        const currentValue = this.getCurrentValue();
+        if (!this.isTwosComplement && currentValue < 0n) {
+            this.updateAll(0n);
+        } else {
+            // Refresh display with new mode
+            this.updateAll(currentValue);
+        }
     }
     
     updateDarkMode() {
@@ -136,17 +158,28 @@ class BitConverter {
         // Remove commas for processing
         const cleanValue = value.replace(/,/g, '');
         
-        // Handle partial negative input (just "-") - don't process but maintain state
+        // Handle partial negative input (just "-") - only allow if two's complement is enabled
         if (cleanValue === '-') {
-            // Set the mode to two's complement but don't update displays yet
-            this.isTwosComplement = true;
-            const modeText = 'Two\'s Complement';
-            this.maxValueDisplay.textContent = `Mode: ${modeText}`;
+            if (this.isTwosComplement) {
+                // Update mode display but don't process the incomplete input yet
+                const modeText = 'Two\'s Complement';
+                this.maxValueDisplay.textContent = `Mode: ${modeText}`;
+            } else {
+                // Prevent negative input in unsigned mode
+                e.target.value = '';
+            }
             return;
         }
         
         try {
             const bigIntValue = BigInt(cleanValue);
+            
+            // Prevent negative values in unsigned mode
+            if (!this.isTwosComplement && bigIntValue < 0n) {
+                // Don't update, just return (invalid input)
+                return;
+            }
+            
             this.updateAll(bigIntValue, 'decimal');
         } catch (error) {
             // Invalid input, ignore but don't clear the display
@@ -232,10 +265,10 @@ class BitConverter {
     }
 
     updateAll(value, source = '') {
-        // Automatically determine mode based on value
-        this.isTwosComplement = value < 0n;
+        // Use the toggle setting instead of auto-detecting mode
+        // this.isTwosComplement is now controlled by the toggle
         
-        // Update ranges based on detected mode
+        // Update ranges based on current mode setting
         if (this.isTwosComplement) {
             this.maxValue = BigInt('0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF');
             this.minValue = -BigInt('0x80000000000000000000000000000000');
@@ -535,13 +568,18 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (input === converter.decimalInput) {
                     const cleanValue = value.replace(/,/g, '');
-                    // Allow just "-" for typing negative numbers
+                    // Allow just "-" for typing negative numbers only if two's complement is enabled
                     if (cleanValue === '-') {
-                        isValid = true;
+                        isValid = converter.isTwosComplement;
                     } else {
                         try {
                             const bigIntValue = BigInt(cleanValue);
-                            isValid = true; // Any valid BigInt is acceptable
+                            // Only allow negative values if two's complement is enabled
+                            if (!converter.isTwosComplement && bigIntValue < 0n) {
+                                isValid = false;
+                            } else {
+                                isValid = true; // Any valid BigInt is acceptable when mode allows it
+                            }
                         } catch {
                             isValid = false;
                         }

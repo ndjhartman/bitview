@@ -81,6 +81,11 @@ main {
     align-items: center;
 }
 
+.twos-complement-toggle {
+    display: flex;
+    align-items: center;
+}
+
 .toggle-label {
     display: flex;
     align-items: center;
@@ -563,7 +568,7 @@ input:checked + .slider:before {
 }
 
 .dark-mode .toggle-label {
-    color: #f1f5f9;
+    color: #e2e8f0;
 }
 
 .dark-mode .input-group label {
