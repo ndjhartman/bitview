@@ -558,7 +558,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         isValid = true;
                     } else {
                         // Remove underscores first (same as onHexChange)
+			console.log('Hex input value3:', hexValue);
                         const cleanHexValue = hexValue.replace(/_/g, '');
+			console.log('Hex input value4:', cleanHexValue);
                         
                         // Allow empty after underscore removal
                         if (cleanHexValue === '') {
