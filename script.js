@@ -547,26 +547,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hexValue.startsWith('0x')) {
                         hexValue = hexValue.slice(2);
                     }
-                    // Allow empty hex after 0x removal, and validate hex characters
+                    
+                    // Allow empty hex after 0x removal
                     if (hexValue === '') {
-                        isValid = true; // Allow empty hex for typing
-                    } else if (/^[0-9a-f_]+$/.test(hexValue)) { // Allow underscores in hex
-                        // Remove underscores before BigInt conversion
+                        isValid = true;
+                    } else {
+                        // Remove underscores first (same as onHexChange)
                         const cleanHexValue = hexValue.replace(/_/g, '');
                         
-                        // Check if after removing underscores we have a valid hex string
+                        // Allow empty after underscore removal
                         if (cleanHexValue === '') {
-                            isValid = true; // Allow underscores-only input for typing
+                            isValid = true;
                         } else {
-                            try {
-                                const bigIntValue = BigInt('0x' + cleanHexValue);
-                                isValid = true; // Any valid hex BigInt is acceptable
-                            } catch (error) {
-                                isValid = false; // BigInt conversion failed
-                            }
+                            // Validate cleaned hex characters only
+                            isValid = /^[0-9a-f]+$/.test(cleanHexValue);
                         }
-                    } else {
-                        isValid = false; // Invalid hex characters
                     }
                 } else if (input === converter.binaryInput) {
                     if (value === '') {
