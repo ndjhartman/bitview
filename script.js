@@ -173,6 +173,12 @@ class BitConverter {
         // Remove underscores to ignore them
         const cleanValue = value.replace(/_/g, '');
         
+        // Handle empty hex after underscore removal
+        if (!cleanValue) {
+            this.updateAll(0n, 'hex');
+            return;
+        }
+        
         // Validate hex characters (after removing underscores)
         if (!/^[0-9a-f]+$/.test(cleanValue)) {
             return;
@@ -545,13 +551,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hexValue === '') {
                         isValid = true; // Allow empty hex for typing
                     } else if (/^[0-9a-f_]+$/.test(hexValue)) { // Allow underscores in hex
-                        try {
-                            // Remove underscores before BigInt conversion
-                            const cleanHexValue = hexValue.replace(/_/g, '');
-                            const bigIntValue = BigInt('0x' + cleanHexValue);
-                            isValid = true; // Any valid hex BigInt is acceptable
-                        } catch (error) {
-                            isValid = false; // BigInt conversion failed
+                        // Remove underscores before BigInt conversion
+                        const cleanHexValue = hexValue.replace(/_/g, '');
+                        
+                        // Check if after removing underscores we have a valid hex string
+                        if (cleanHexValue === '') {
+                            isValid = true; // Allow underscores-only input for typing
+                        } else {
+                            try {
+                                const bigIntValue = BigInt('0x' + cleanHexValue);
+                                isValid = true; // Any valid hex BigInt is acceptable
+                            } catch (error) {
+                                isValid = false; // BigInt conversion failed
+                            }
                         }
                     } else {
                         isValid = false; // Invalid hex characters
