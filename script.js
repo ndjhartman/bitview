@@ -169,9 +169,14 @@ class BitConverter {
             this.updateAll(0n, 'hex');
             return;
         }
+
+        // Log hex input value for debugging
+        console.log('Hex input value:', value);
         
         // Remove underscores to ignore them
         const cleanValue = value.replace(/_/g, '');
+
+        console.log('Hex input value2:', value);
         
         // Handle empty hex after underscore removal
         if (!cleanValue) {
