@@ -1,3 +1,4 @@
+
 class BitConverter {
     constructor() {
         this.decimalInput = document.getElementById('decimal');
@@ -22,7 +23,6 @@ class BitConverter {
     }
     
     init() {
-	console.log('init');
         // Add event listeners for input changes
         this.decimalInput.addEventListener('input', (e) => this.onDecimalChange(e));
         this.hexInput.addEventListener('input', (e) => this.onHexChange(e));
@@ -155,7 +155,6 @@ class BitConverter {
     
     onHexChange(e) {
         let value = e.target.value.toLowerCase().trim();
-	console.log('Hex input value0:', value);
         if (!value) {
             this.updateAll(0n, 'hex');
             return;
@@ -173,12 +172,10 @@ class BitConverter {
         }
 
         // Log hex input value for debugging
-        console.log('Hex input value:', value);
         
         // Remove underscores to ignore them
         const cleanValue = value.replace(/_/g, '');
 
-        console.log('Hex input value2:', value);
         
         // Handle empty hex after underscore removal
         if (!cleanValue) {
@@ -560,9 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         isValid = true;
                     } else {
                         // Remove underscores first (same as onHexChange)
-			console.log('Hex input value3:', hexValue);
                         const cleanHexValue = hexValue.replace(/_/g, '');
-			console.log('Hex input value4:', cleanHexValue);
                         
                         // Allow empty after underscore removal
                         if (cleanHexValue === '') {
