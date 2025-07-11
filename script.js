@@ -154,6 +154,7 @@ class BitConverter {
     
     onHexChange(e) {
         let value = e.target.value.toLowerCase().trim();
+	console.log('Hex input value0:', value);
         if (!value) {
             this.updateAll(0n, 'hex');
             return;
