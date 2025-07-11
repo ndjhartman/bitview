@@ -3,25 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitView - Number Base Converter</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>BitView - Free Online Number Base Converter | Decimal, Hex, Binary Converter</title>
+    <meta name="title" content="BitView - Free Online Number Base Converter | Decimal, Hex, Binary Converter">
+    <meta name="description" content="Free online number base converter for decimal, hexadecimal, and binary conversion. Interactive bit visualizer with real-time conversion, binary bit breakdown, and hex visualization. Perfect for programmers, students, and developers.">
+    <meta name="keywords" content="decimal to hex, decimal to binary, hex to decimal, hex to binary, binary to hex, binary to decimal, base converter, number base converter, bit visualizer, hex visualizer, binary bit visualizer, interactive binary, interactive decimal to binary, interactive hex to binary, number system converter, radix converter, programmer calculator, computer science tools">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="author" content="BitView">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bitview.pages.dev/">
+    <meta property="og:title" content="BitView - Free Online Number Base Converter | Decimal, Hex, Binary">
+    <meta property="og:description" content="Free online number base converter for decimal, hexadecimal, and binary conversion. Interactive bit visualizer with real-time conversion and binary breakdown.">
+    <meta property="og:image" content="https://bitview.pages.dev/bitview-preview.png">
+    <meta property="og:site_name" content="BitView">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://bitview.pages.dev/">
+    <meta property="twitter:title" content="BitView - Free Online Number Base Converter">
+    <meta property="twitter:description" content="Interactive decimal, hex, and binary converter with real-time bit visualization. Perfect for programmers and students.">
+    <meta property="twitter:image" content="https://bitview.pages.dev/bitview-preview.png">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#76b900">
+    <meta name="msapplication-TileColor" content="#76b900">
+    <link rel="canonical" href="https://bitview.pages.dev/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "BitView - Number Base Converter",
+      "description": "Free online number base converter for decimal, hexadecimal, and binary conversion with interactive bit visualization",
+      "url": "https://bitview.pages.dev/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "BitView"
+      },
+      "featureList": [
+        "Decimal to hexadecimal conversion",
+        "Decimal to binary conversion", 
+        "Hexadecimal to decimal conversion",
+        "Hexadecimal to binary conversion",
+        "Binary to decimal conversion",
+        "Binary to hexadecimal conversion",
+        "Interactive bit visualization",
+        "Real-time number base conversion",
+        "Binary bit breakdown display",
+        "Hexadecimal nibble visualization",
+        "Dark mode support",
+        "Responsive design",
+        "32-bit and 64-bit support"
+      ],
+      "browserRequirements": "Requires JavaScript"
+    }
+    </script>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0f4fcff80a124c21b016c8080f8e8095"}'></script><!-- End Cloudflare Web Analytics -->
+    
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0f4fcff80a124c21b016c8080f8e8095"}'></script>
+    <!-- End Cloudflare Web Analytics -->
 </head>
 <body>
     <div class="container">
         <header>
             <h1>BitView</h1>
-            <p>Number Base Converter</p>
+            <p>Free Online Number Base Converter</p>
+            <div class="description">
+                <p>Convert between decimal, hexadecimal, and binary number systems with interactive bit visualization. Perfect for programmers, computer science students, and anyone working with different number bases.</p>
+            </div>
         </header>
         
         <main>
-            <div class="converter-panel">
+            <section class="converter-panel" aria-label="Number Base Conversion Tool">
                 <div class="controls-section">
                     <div class="dark-mode-toggle">
                         <label class="toggle-label">
                             <span>Light</span>
                             <div class="toggle-switch">
-                                <input type="checkbox" id="darkModeToggle">
+                                <input type="checkbox" id="darkModeToggle" aria-label="Toggle dark mode">
                                 <span class="slider"></span>
                             </div>
                             <span>Dark</span>
@@ -29,32 +111,36 @@
                     </div>
                 </div>
                 
-                <div class="input-section">
+                <section class="input-section" aria-label="Number Input Fields">
+                    <h2 class="sr-only">Number Conversion Inputs</h2>
                     <div class="input-group">
-                        <label for="decimal">Decimal</label>
-                        <input type="text" id="decimal" placeholder="0">
+                        <label for="decimal">Decimal (Base 10)</label>
+                        <input type="text" id="decimal" placeholder="0" aria-describedby="decimal-help">
+                        <small id="decimal-help" class="sr-only">Enter a decimal number to convert to other bases</small>
                     </div>
                     
                     <div class="input-group">
-                        <label for="hex">Hexadecimal</label>
-                        <input type="text" id="hex" placeholder="0x00">
+                        <label for="hex">Hexadecimal (Base 16)</label>
+                        <input type="text" id="hex" placeholder="0x00" aria-describedby="hex-help">
+                        <small id="hex-help" class="sr-only">Enter a hexadecimal number (with or without 0x prefix)</small>
                     </div>
                     
                     <div class="input-group">
-                        <label for="binary">Binary</label>
-                        <input type="text" id="binary" placeholder="00000000">
+                        <label for="binary">Binary (Base 2)</label>
+                        <input type="text" id="binary" placeholder="00000000" aria-describedby="binary-help">
+                        <small id="binary-help" class="sr-only">Enter a binary number using only 0s and 1s</small>
                     </div>
-                </div>
+                </section>
                 
-                <div class="visualization-section">
+                <section class="visualization-section" aria-label="Binary Visualization">
                     <div class="viz-header">
-                        <h2>Binary Visualization</h2>
+                        <h2>Interactive Binary Visualization</h2>
                         <div class="bit-info">
                             <span class="bit-count" id="bitCount">32 bits</span>
                             <span class="max-value" id="maxValueDisplay">Max: 4,294,967,295</span>
                         </div>
                     </div>
-                    <div class="bit-display" id="bitDisplay"></div>
+                    <div class="bit-display" id="bitDisplay" role="region" aria-label="Binary bit visualization"></div>
                     
                     <div class="hex-section">
                         <div class="viz-header">
@@ -63,13 +149,63 @@
                                 <span class="bit-count" id="nibbleCount">8 nibbles</span>
                             </div>
                         </div>
-                        <div class="hex-display" id="hexDisplay"></div>
+                        <div class="hex-display" id="hexDisplay" role="region" aria-label="Hexadecimal nibble visualization"></div>
                     </div>
+                </section>
+            </section>
+            
+            <!-- SEO Content Section -->
+            <section class="content-section" aria-label="About Number Base Conversion">
+                <h2>About Number Base Conversion</h2>
+                <div class="content-grid">
+                    <article class="content-card">
+                        <h3>Decimal to Binary & Hex Conversion</h3>
+                        <p>Convert decimal numbers to binary and hexadecimal formats instantly. Our decimal to binary converter shows the step-by-step bit representation, making it perfect for learning binary arithmetic and computer science concepts.</p>
+                    </article>
+                    
+                    <article class="content-card">
+                        <h3>Interactive Binary Bit Visualizer</h3>
+                        <p>Visualize how numbers are represented in binary with our interactive bit visualizer. Each bit is clickable and shows its decimal value, helping you understand binary place values and two's complement representation.</p>
+                    </article>
+                    
+                    <article class="content-card">
+                        <h3>Hex to Decimal & Binary</h3>
+                        <p>Convert hexadecimal numbers to decimal and binary formats. Our hex converter supports both uppercase and lowercase hex digits and automatically handles the 0x prefix for programmer convenience.</p>
+                    </article>
+                    
+                    <article class="content-card">
+                        <h3>Real-time Number Base Conversion</h3>
+                        <p>All conversions happen in real-time as you type. Whether you're converting decimal to hex, binary to decimal, or any other combination, see the results instantly across all number systems.</p>
+                    </article>
                 </div>
-            </div>
+                
+                <div class="features-section">
+                    <h3>Key Features</h3>
+                    <ul>
+                        <li><strong>Multi-base conversion:</strong> Decimal, hexadecimal, and binary number system support</li>
+                        <li><strong>Interactive visualization:</strong> Click on bits to understand their individual values</li>
+                        <li><strong>Real-time conversion:</strong> Instant updates across all number formats</li>
+                        <li><strong>Bit manipulation:</strong> Visual representation of binary operations</li>
+                        <li><strong>Educational tool:</strong> Perfect for computer science students and programmers</li>
+                        <li><strong>Responsive design:</strong> Works on desktop, tablet, and mobile devices</li>
+                        <li><strong>Dark mode:</strong> Easy on the eyes for extended coding sessions</li>
+                    </ul>
+                </div>
+            </section>
         </main>
         
-        <div class="tooltip" id="tooltip"></div>
+        <footer>
+            <p>&copy; 2024 BitView - Free Number Base Converter. All rights reserved.</p>
+            <nav aria-label="Footer navigation">
+                <ul>
+                    <li><a href="#converter" aria-label="Go to converter tool">Converter</a></li>
+                    <li><a href="#about" aria-label="About BitView">About</a></li>
+                    <li><a href="#features" aria-label="Features">Features</a></li>
+                </ul>
+            </nav>
+        </footer>
+        
+        <div class="tooltip" id="tooltip" role="tooltip"></div>
     </div>
     
     <script src="script.js"></script>
