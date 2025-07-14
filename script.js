@@ -422,22 +422,31 @@ class BitConverter {
 
     toggleBit(bitPosition) {
         const currentValue = this.getCurrentValue();
+        const currentDisplayBits = this.getMinimumBitsNeeded(currentValue);
+        
+        // Convert current value to unsigned bit representation
+        let unsignedValue;
+        if (this.isTwosComplement && currentValue < 0n) {
+            // Convert negative two's complement to unsigned representation
+            const totalRange = BigInt(1) << BigInt(currentDisplayBits); // 2^n
+            unsignedValue = currentValue + totalRange;
+        } else {
+            unsignedValue = currentValue;
+        }
+        
+        // Toggle the bit in the unsigned representation
         const bitValue = 2n ** BigInt(bitPosition);
+        let newUnsignedValue = unsignedValue ^ bitValue;
         
-        // Toggle the bit
-        let newValue = currentValue ^ bitValue;
-        
-        // If we're in two's complement mode, we need to check if the result should be interpreted as negative
-        // based on the CURRENT display width, not a recalculated width
-        if (this.isTwosComplement && newValue > 0n) {
-            // Use the current display width to determine the two's complement range
-            const currentDisplayBits = this.getMinimumBitsNeeded(currentValue);
+        // Convert back to signed if needed
+        let newValue = newUnsignedValue;
+        if (this.isTwosComplement) {
             const maxPositive = BigInt(1) << BigInt(currentDisplayBits - 1); // 2^(n-1)
             
             // If the MSB is set in the current display width, interpret as negative
-            if (newValue >= maxPositive) {
+            if (newUnsignedValue >= maxPositive) {
                 const totalRange = BigInt(1) << BigInt(currentDisplayBits); // 2^n
-                newValue = newValue - totalRange;
+                newValue = newUnsignedValue - totalRange;
             }
         }
         
