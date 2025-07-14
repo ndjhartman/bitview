@@ -131,11 +131,17 @@ class BitConverter {
         
         let minBits;
         if (this.isTwosComplement && value < 0n) {
-            // For negative numbers in two's complement, we need enough bits to represent the magnitude
-            const absValue = -value;
-            const bitLength = absValue.toString(2).length;
-            // We need at least one more bit than the magnitude for the sign
-            minBits = bitLength + 1;
+            // For negative numbers in two's complement, find the minimum bits needed
+            // Two's complement range for n bits: -2^(n-1) to 2^(n-1) - 1
+            let testBits = 8; // Start with minimum 8 bits
+            while (true) {
+                const minValue = -(BigInt(1) << BigInt(testBits - 1)); // -2^(n-1)
+                if (value >= minValue) {
+                    minBits = testBits;
+                    break;
+                }
+                testBits += 4; // Increment by 4 bits (nibble)
+            }
         } else {
             // For positive numbers or unsigned mode
             minBits = value.toString(2).length;
