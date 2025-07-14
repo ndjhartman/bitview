@@ -419,7 +419,20 @@ class BitConverter {
         const bitValue = 2n ** BigInt(bitPosition);
         
         // Toggle the bit
-        const newValue = currentValue ^ bitValue;
+        let newValue = currentValue ^ bitValue;
+        
+        // If we're in two's complement mode, check if the result should be interpreted as negative
+        if (this.isTwosComplement && newValue > 0n) {
+            // Determine how many bits we need to represent this value
+            const displayBits = this.getMinimumBitsNeeded(newValue);
+            const maxPositive = BigInt(1) << BigInt(displayBits - 1); // 2^(n-1)
+            
+            // If the MSB is set (value >= 2^(n-1)), interpret as negative
+            if (newValue >= maxPositive) {
+                const totalRange = BigInt(1) << BigInt(displayBits); // 2^n
+                newValue = newValue - totalRange;
+            }
+        }
         
         // Update without range checking
         this.updateAll(newValue);
