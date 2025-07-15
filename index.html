@@ -117,6 +117,12 @@
                             <span>Two's Complement</span>
                         </label>
                     </div>
+                    
+                    <div class="copy-url-section">
+                        <button id="copyUrlButton" class="copy-url-button" aria-label="Copy current URL to clipboard">
+                            📋 Copy URL
+                        </button>
+                    </div>
                 </div>
                 
                 <section class="input-section" aria-label="Number Input Fields">
@@ -124,19 +130,19 @@
                     <div class="input-group">
                         <label for="decimal">Decimal (Base 10)</label>
                         <input type="text" id="decimal" placeholder="0" aria-describedby="decimal-help">
-                        <small id="decimal-help" class="sr-only">Enter a decimal number to convert to other bases</small>
+                        <small id="decimal-help" class="sr-only">Enter a decimal number to convert to other bases (underscores are ignored)</small>
                     </div>
                     
                     <div class="input-group">
                         <label for="hex">Hexadecimal (Base 16)</label>
                         <input type="text" id="hex" placeholder="0x00" aria-describedby="hex-help">
-                        <small id="hex-help" class="sr-only">Enter a hexadecimal number (with or without 0x prefix)</small>
+                        <small id="hex-help" class="sr-only">Enter a hexadecimal number (with or without 0x prefix, underscores are ignored)</small>
                     </div>
                     
                     <div class="input-group">
                         <label for="binary">Binary (Base 2)</label>
-                        <input type="text" id="binary" placeholder="00000000" aria-describedby="binary-help">
-                        <small id="binary-help" class="sr-only">Enter a binary number using only 0s and 1s</small>
+                        <input type="text" id="binary" placeholder="0b00000000" aria-describedby="binary-help">
+                        <small id="binary-help" class="sr-only">Enter a binary number using only 0s and 1s (with optional 0b prefix)</small>
                     </div>
                 </section>
                 

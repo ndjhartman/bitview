@@ -12,6 +12,7 @@ class BitConverter {
         this.bitCount = document.getElementById('bitCount');
         this.nibbleCount = document.getElementById('nibbleCount');
         this.maxValueDisplay = document.getElementById('maxValueDisplay');
+        this.copyUrlButton = document.getElementById('copyUrlButton');
         
         // Load cached states
         this.loadCachedStates();
@@ -19,6 +20,9 @@ class BitConverter {
         // Initialize modes
         this.updateRanges();
         this.updateDarkMode();
+        
+        // Check URL for initial value
+        this.loadFromUrl();
         
         this.init();
     }
@@ -31,8 +35,92 @@ class BitConverter {
         this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
         this.twosComplementToggle.addEventListener('change', (e) => this.onTwosComplementChange(e));
         
-        // Start with empty inputs to show placeholder text
-        this.initializeEmpty();
+        // Add copy URL button listener
+        if (this.copyUrlButton) {
+            this.copyUrlButton.addEventListener('click', () => this.copyUrlToClipboard());
+        }
+        
+        // If no URL value was loaded, start with empty inputs
+        if (!this.hasLoadedFromUrl) {
+            this.initializeEmpty();
+        }
+    }
+    
+    loadFromUrl() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hexValue = urlParams.get('v');
+            
+            if (hexValue && hexValue.startsWith('0x')) {
+                const cleanHex = hexValue.slice(2).replace(/_/g, '');
+                if (/^[0-9a-fA-F]+$/.test(cleanHex)) {
+                    const bigIntValue = BigInt(hexValue);
+                    this.updateAll(bigIntValue);
+                    this.hasLoadedFromUrl = true;
+                    return;
+                }
+            }
+        } catch (error) {
+            console.warn('Invalid URL parameter, using default value');
+        }
+        
+        this.hasLoadedFromUrl = false;
+    }
+    
+    updateUrl(value) {
+        try {
+            const displayBits = this.getMinimumBitsNeeded(value);
+            const hexDigits = Math.ceil(displayBits / 4);
+            const hexValue = value < 0n ? 
+                (BigInt(1) << BigInt(displayBits)) + value : value;
+            const hexString = '0x' + hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
+            
+            const url = new URL(window.location);
+            url.searchParams.set('v', hexString);
+            window.history.replaceState({}, '', url);
+        } catch (error) {
+            console.warn('Failed to update URL:', error);
+        }
+    }
+    
+    copyUrlToClipboard() {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                // Show brief feedback
+                const originalText = this.copyUrlButton.textContent;
+                this.copyUrlButton.textContent = '✓ Copied!';
+                this.copyUrlButton.classList.add('copied');
+                setTimeout(() => {
+                    this.copyUrlButton.textContent = originalText;
+                    this.copyUrlButton.classList.remove('copied');
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy URL:', err);
+                // Fallback for older browsers
+                this.fallbackCopyUrl();
+            });
+        } else {
+            this.fallbackCopyUrl();
+        }
+    }
+    
+    fallbackCopyUrl() {
+        // Create a temporary input element to copy the URL
+        const tempInput = document.createElement('input');
+        tempInput.value = window.location.href;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        // Show feedback
+        const originalText = this.copyUrlButton.textContent;
+        this.copyUrlButton.textContent = '✓ Copied!';
+        this.copyUrlButton.classList.add('copied');
+        setTimeout(() => {
+            this.copyUrlButton.textContent = originalText;
+            this.copyUrlButton.classList.remove('copied');
+        }, 1500);
     }
     
     initializeEmpty() {
@@ -161,8 +249,8 @@ class BitConverter {
             return;
         }
         
-        // Remove commas for processing
-        const cleanValue = value.replace(/,/g, '');
+        // Remove commas and underscores for processing
+        const cleanValue = value.replace(/[,_]/g, '');
         
         // Handle partial negative input (just "-") - only allow if two's complement is enabled
         if (cleanValue === '-') {
@@ -247,24 +335,44 @@ class BitConverter {
     }
     
     onBinaryChange(e) {
-        const value = e.target.value.trim();
+        let value = e.target.value.trim();
         if (!value) {
             this.updateAll(0n, 'binary');
             return;
         }
         
+        // Remove 0b prefix if present
+        if (value.toLowerCase().startsWith('0b')) {
+            value = value.slice(2);
+        }
+        
+        // Handle empty binary after 0b removal
+        if (!value) {
+            this.updateAll(0n, 'binary');
+            return;
+        }
+        
+        // Remove underscores to ignore them
+        const cleanValue = value.replace(/_/g, '');
+        
+        // Handle empty binary after underscore removal
+        if (!cleanValue) {
+            this.updateAll(0n, 'binary');
+            return;
+        }
+        
         // Validate binary characters
-        if (!/^[01]+$/.test(value)) {
+        if (!/^[01]+$/.test(cleanValue)) {
             return;
         }
         
         try {
-            let bigIntValue = BigInt('0b' + value);
+            let bigIntValue = BigInt('0b' + cleanValue);
             
             // If two's complement is enabled and MSB is 1, interpret as negative
-            if (this.isTwosComplement && value.length > 0 && value[0] === '1') {
+            if (this.isTwosComplement && cleanValue.length > 0 && cleanValue[0] === '1') {
                 // Convert from two's complement to signed value
-                const bitLength = value.length;
+                const bitLength = cleanValue.length;
                 const maxPositive = BigInt(1) << BigInt(bitLength - 1); // 2^(n-1)
                 if (bigIntValue >= maxPositive) {
                     // This is a negative number in two's complement
@@ -347,6 +455,9 @@ class BitConverter {
             // Update visualizations
             this.updateBitDisplay(displayValue);
             this.updateHexDisplay(displayValue);
+            
+            // Update URL with current value
+            this.updateUrl(displayValue);
             
             // Update validation styling for all inputs
             this.updateInputValidation();
@@ -562,9 +673,9 @@ function formatNumber(num) {
 
 function validateInput(input, type) {
     const patterns = {
-        decimal: /^-?\d+$/,  // Allow negative numbers
+        decimal: /^-?[\d_]+$/,  // Allow negative numbers and underscores
         hex: /^(0x)?[0-9a-fA-F_]+$/,  // Allow underscores in hex
-        binary: /^[01]+$/
+        binary: /^(0b)?[01_]+$/  // Allow 0b prefix and underscores
     };
     
     return patterns[type].test(input);
@@ -620,7 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let isValid = false;
             try {
                 if (input === converter.decimalInput) {
-                    const cleanValue = value.replace(/,/g, '');
+                    const cleanValue = value.replace(/[,_]/g, '');
                     // Allow just "-" for typing negative numbers only if two's complement is enabled
                     if (cleanValue === '-') {
                         isValid = converter.isTwosComplement;
@@ -659,17 +770,32 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 } else if (input === converter.binaryInput) {
-                    if (value === '') {
+                    let binaryValue = value.toLowerCase();
+                    
+                    // Remove 0b prefix if present
+                    if (binaryValue.startsWith('0b')) {
+                        binaryValue = binaryValue.slice(2);
+                    }
+                    
+                    if (binaryValue === '') {
                         isValid = true; // Allow empty binary for typing
-                    } else if (/^[01]+$/.test(value)) {
-                        try {
-                            const bigIntValue = BigInt('0b' + value);
-                            isValid = true; // Any valid binary BigInt is acceptable
-                        } catch {
-                            isValid = false; // BigInt conversion failed
-                        }
                     } else {
-                        isValid = false; // Invalid binary characters
+                        // Remove underscores first
+                        const cleanBinaryValue = binaryValue.replace(/_/g, '');
+                        
+                        // Allow empty after underscore removal
+                        if (cleanBinaryValue === '') {
+                            isValid = true;
+                        } else if (/^[01]+$/.test(cleanBinaryValue)) {
+                            try {
+                                const bigIntValue = BigInt('0b' + cleanBinaryValue);
+                                isValid = true; // Any valid binary BigInt is acceptable
+                            } catch {
+                                isValid = false; // BigInt conversion failed
+                            }
+                        } else {
+                            isValid = false; // Invalid binary characters
+                        }
                     }
                 }
             } catch {

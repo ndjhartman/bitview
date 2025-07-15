@@ -140,6 +140,46 @@ input:checked + .slider:before {
     transform: translateX(30px);
 }
 
+/* Copy URL Button */
+.copy-url-section {
+    display: flex;
+    align-items: center;
+}
+
+.copy-url-button {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.copy-url-button:hover {
+    background: #76b900;
+    border-color: #76b900;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(118, 185, 0, 0.2);
+}
+
+.copy-url-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(118, 185, 0, 0.2);
+}
+
+.copy-url-button.copied {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
 /* Input Section */
 .input-section {
     padding: 2.5rem 3rem;
@@ -569,6 +609,24 @@ input:checked + .slider:before {
 
 .dark-mode .toggle-label {
     color: #e2e8f0;
+}
+
+.dark-mode .copy-url-button {
+    background: #374151;
+    border-color: #555555;
+    color: #e2e8f0;
+}
+
+.dark-mode .copy-url-button:hover {
+    background: #76b900;
+    border-color: #76b900;
+    color: white;
+}
+
+.dark-mode .copy-url-button.copied {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
 }
 
 .dark-mode .input-group label {
