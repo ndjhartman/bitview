@@ -383,7 +383,7 @@ input:checked + .slider:before {
     font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
 }
 
-/* Hex character color coding - Green palette */
+/* Hex character styling - Simple zero/nonzero system */
 .hex-char {
     width: 42px;
     height: 42px;
@@ -396,139 +396,31 @@ input:checked + .slider:before {
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
-    border: 1px solid transparent;
 }
 
-/* Individual hex character colors - Green palette from light to dark */
-.hex-char.hex-0 {
-    background: #f0f9e6;
-    color: #4d7c0f;
-    border-color: #d9f99d;
-}
-
-.hex-char.hex-1 {
-    background: #e8f5e8;
-    color: #365314;
-    border-color: #bbf7d0;
-}
-
-.hex-char.hex-2 {
-    background: #dcfce7;
-    color: #166534;
-    border-color: #86efac;
-}
-
-.hex-char.hex-3 {
-    background: #d1fae5;
-    color: #14532d;
-    border-color: #6ee7b7;
-}
-
-.hex-char.hex-4 {
-    background: #c6f6d5;
-    color: #0f4b23;
-    border-color: #5eead4;
-}
-
-.hex-char.hex-5 {
-    background: #bbf7d0;
-    color: #064e3b;
-    border-color: #2dd4bf;
-}
-
-.hex-char.hex-6 {
-    background: #a7f3d0;
-    color: #0c4a54;
-    border-color: #22d3ee;
-}
-
-.hex-char.hex-7 {
-    background: #86efac;
-    color: #155e75;
-    border-color: #67e8f9;
-}
-
-.hex-char.hex-8 {
-    background: #6ee7b7;
-    color: #0c4a6e;
-    border-color: #0ea5e9;
-}
-
-.hex-char.hex-9 {
-    background: #5eead4;
-    color: #0c4a6e;
-    border-color: #0284c7;
-}
-
-.hex-char.hex-a {
-    background: #4ade80;
-    color: #ffffff;
-    border-color: #16a34a;
-}
-
-.hex-char.hex-b {
-    background: #22c55e;
-    color: #ffffff;
-    border-color: #15803d;
-}
-
-.hex-char.hex-c {
-    background: #16a34a;
-    color: #ffffff;
-    border-color: #166534;
-}
-
-.hex-char.hex-d {
-    background: #15803d;
-    color: #ffffff;
-    border-color: #14532d;
-}
-
-.hex-char.hex-e {
-    background: #166534;
-    color: #ffffff;
-    border-color: #052e16;
-}
-
-.hex-char.hex-f {
-    background: #14532d;
-    color: #ffffff;
-    border-color: #052e16;
-}
-
-/* Hover effects for each hex character */
-.hex-char.hex-0:hover { background: #e8f5e8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(77, 124, 15, 0.25); }
-.hex-char.hex-1:hover { background: #dcfce7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(54, 83, 20, 0.25); }
-.hex-char.hex-2:hover { background: #d1fae5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(22, 101, 52, 0.25); }
-.hex-char.hex-3:hover { background: #c6f6d5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(20, 83, 45, 0.25); }
-.hex-char.hex-4:hover { background: #bbf7d0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15, 75, 35, 0.25); }
-.hex-char.hex-5:hover { background: #a7f3d0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25); }
-.hex-char.hex-6:hover { background: #86efac; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(12, 74, 84, 0.25); }
-.hex-char.hex-7:hover { background: #6ee7b7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(21, 94, 117, 0.25); }
-.hex-char.hex-8:hover { background: #5eead4; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(12, 74, 110, 0.25); }
-.hex-char.hex-9:hover { background: #4ade80; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(12, 74, 110, 0.25); }
-.hex-char.hex-a:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74, 222, 128, 0.35); }
-.hex-char.hex-b:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35); }
-.hex-char.hex-c:hover { background: #166534; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35); }
-.hex-char.hex-d:hover { background: #14532d; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35); }
-.hex-char.hex-e:hover { background: #052e16; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(22, 101, 52, 0.35); }
-.hex-char.hex-f:hover { background: #052e16; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(20, 83, 45, 0.35); }
-
-/* Remove old hex styling */
 .hex-char.zero {
-    /* Remove these old styles - replaced by individual character colors */
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e0;
 }
 
 .hex-char.nonzero {
-    /* Remove these old styles - replaced by individual character colors */
+    background: #76b900;
+    color: #ffffff;
+    border: 1px solid #5a7c00;
+}
+
+.hex-char:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .hex-char.zero:hover {
-    /* Remove these old styles - replaced by individual character colors */
+    background: #e2e8f0;
 }
 
 .hex-char.nonzero:hover {
-    /* Remove these old styles - replaced by individual character colors */
+    background: #5a7c00;
 }
 
 /* Empty state styling */
@@ -801,120 +693,50 @@ input:checked + .slider:before {
     background: #5a7c00 !important;
 }
 
-/* Dark mode hex character colors - Darker green palette */
-.dark-mode .hex-char.hex-0 {
-    background: #1a2e1a;
-    color: #a7f3d0;
-    border-color: #065f46;
+.dark-mode .hex-display {
+    background: #404040;
+    border-color: #555555;
 }
 
-.dark-mode .hex-char.hex-1 {
-    background: #1e3a1e;
-    color: #86efac;
-    border-color: #047857;
+.dark-mode .hex-group {
+    /* Inherits gap and layout from parent */
 }
 
-.dark-mode .hex-char.hex-2 {
-    background: #22462a;
-    color: #6ee7b7;
-    border-color: #059669;
+.dark-mode .bit-group-subscript,
+.dark-mode .hex-group-subscript {
+    color: #9ca3af;
 }
 
-.dark-mode .hex-char.hex-3 {
-    background: #26522e;
-    color: #5eead4;
-    border-color: #0d9488;
+.dark-mode .hex-char {
+    background: #555555;
+    color: #cbd5e0;
+    border-color: #666666;
 }
 
-.dark-mode .hex-char.hex-4 {
-    background: #2a5e32;
-    color: #4ade80;
-    border-color: #0f766e;
+.dark-mode .hex-char.zero {
+    background: #555555;
+    color: #cbd5e0;
+    border-color: #666666;
 }
 
-.dark-mode .hex-char.hex-5 {
-    background: #2e6a36;
-    color: #22c55e;
-    border-color: #115e59;
-}
-
-.dark-mode .hex-char.hex-6 {
-    background: #32763a;
-    color: #16a34a;
-    border-color: #134e4a;
-}
-
-.dark-mode .hex-char.hex-7 {
-    background: #36823e;
-    color: #15803d;
-    border-color: #134e4a;
-}
-
-.dark-mode .hex-char.hex-8 {
-    background: #3a8e42;
-    color: #166534;
-    border-color: #1f2937;
-}
-
-.dark-mode .hex-char.hex-9 {
-    background: #3e9a46;
-    color: #14532d;
-    border-color: #1f2937;
-}
-
-.dark-mode .hex-char.hex-a {
-    background: #4ade80;
+.dark-mode .hex-char.nonzero {
+    background: #76b900;
     color: #ffffff;
-    border-color: #16a34a;
+    border-color: #5a7c00;
 }
 
-.dark-mode .hex-char.hex-b {
-    background: #22c55e;
-    color: #ffffff;
-    border-color: #15803d;
+.dark-mode .hex-char:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.dark-mode .hex-char.hex-c {
-    background: #16a34a;
-    color: #ffffff;
-    border-color: #166534;
+.dark-mode .hex-char.zero:hover {
+    background: #666666;
 }
 
-.dark-mode .hex-char.hex-d {
-    background: #15803d;
-    color: #ffffff;
-    border-color: #14532d;
+.dark-mode .hex-char.nonzero:hover {
+    background: #5a7c00;
 }
-
-.dark-mode .hex-char.hex-e {
-    background: #166534;
-    color: #ffffff;
-    border-color: #052e16;
-}
-
-.dark-mode .hex-char.hex-f {
-    background: #14532d;
-    color: #ffffff;
-    border-color: #052e16;
-}
-
-/* Dark mode hover effects */
-.dark-mode .hex-char.hex-0:hover { background: #22462a; }
-.dark-mode .hex-char.hex-1:hover { background: #26522e; }
-.dark-mode .hex-char.hex-2:hover { background: #2a5e32; }
-.dark-mode .hex-char.hex-3:hover { background: #2e6a36; }
-.dark-mode .hex-char.hex-4:hover { background: #32763a; }
-.dark-mode .hex-char.hex-5:hover { background: #36823e; }
-.dark-mode .hex-char.hex-6:hover { background: #3a8e42; }
-.dark-mode .hex-char.hex-7:hover { background: #3e9a46; }
-.dark-mode .hex-char.hex-8:hover { background: #42a64a; }
-.dark-mode .hex-char.hex-9:hover { background: #46b24e; }
-.dark-mode .hex-char.hex-a:hover { background: #16a34a; }
-.dark-mode .hex-char.hex-b:hover { background: #15803d; }
-.dark-mode .hex-char.hex-c:hover { background: #166534; }
-.dark-mode .hex-char.hex-d:hover { background: #14532d; }
-.dark-mode .hex-char.hex-e:hover { background: #052e16; }
-.dark-mode .hex-char.hex-f:hover { background: #052e16; }
 
 /* Dark mode empty state styling */
 .dark-mode .empty-state {
