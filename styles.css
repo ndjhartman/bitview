@@ -755,7 +755,7 @@ input:checked + .slider:before {
 
 .about-content {
     padding: 2rem;
-    text-align: center;
+    text-align: left;
 }
 
 .about-content h2 {
@@ -770,7 +770,7 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .about-info p {
