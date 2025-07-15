@@ -48,20 +48,22 @@ class BitConverter {
     
     loadFromUrl() {
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const hexValue = urlParams.get('v');
+            const path = window.location.pathname;
             
-            if (hexValue && hexValue.startsWith('0x')) {
-                const cleanHex = hexValue.slice(2).replace(/_/g, '');
-                if (/^[0-9a-fA-F]+$/.test(cleanHex)) {
-                    const bigIntValue = BigInt(hexValue);
+            // Check if path starts with /0x followed by hex characters
+            const hexMatch = path.match(/^\/0x([0-9a-fA-F_]+)$/);
+            
+            if (hexMatch) {
+                const hexValue = hexMatch[1].replace(/_/g, ''); // Remove underscores
+                if (/^[0-9a-fA-F]+$/.test(hexValue)) {
+                    const bigIntValue = BigInt('0x' + hexValue);
                     this.updateAll(bigIntValue);
                     this.hasLoadedFromUrl = true;
                     return;
                 }
             }
         } catch (error) {
-            console.warn('Invalid URL parameter, using default value');
+            console.warn('Invalid URL path, using default value');
         }
         
         this.hasLoadedFromUrl = false;
@@ -75,9 +77,8 @@ class BitConverter {
                 (BigInt(1) << BigInt(displayBits)) + value : value;
             const hexString = '0x' + hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
             
-            const url = new URL(window.location);
-            url.searchParams.set('v', hexString);
-            window.history.replaceState({}, '', url);
+            const newPath = '/' + hexString;
+            window.history.replaceState({}, '', newPath);
         } catch (error) {
             console.warn('Failed to update URL:', error);
         }
