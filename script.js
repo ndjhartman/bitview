@@ -596,7 +596,7 @@ class BitConverter {
                 const endBit = startBit + 3;
                 
                 const hexElement = document.createElement('div');
-                hexElement.className = `hex-char ${hexChar === '0' ? 'zero' : 'nonzero'}`;
+                hexElement.className = `hex-char hex-${hexChar.toLowerCase()}`;
                 hexElement.textContent = hexChar;
                 hexElement.dataset.nibble = nibblePosition;
                 
@@ -623,14 +623,14 @@ class BitConverter {
     
     showBitTooltip(e, position) {
         const bitValue = 2n ** BigInt(position);
-        const tooltipText = `Bit ${position}: Value = ${bitValue.toLocaleString()}`;
+        const tooltipText = `Bit ${position}: ${bitValue.toLocaleString()}`;
         this.showTooltip(e, tooltipText);
     }
     
     showHexTooltip(e, startBit, endBit, hexChar) {
         const decimal = parseInt(hexChar, 16);
         const binary = decimal.toString(2).padStart(4, '0');
-        const tooltipText = `Hex ${hexChar}: Bits ${startBit}-${endBit} (${binary})`;
+        const tooltipText = `Bits ${startBit}-${endBit}: ${binary}`;
         this.showTooltip(e, tooltipText);
     }
     
