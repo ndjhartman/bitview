@@ -35,6 +35,9 @@ class BitConverter {
         this.darkModeToggle.addEventListener('change', (e) => this.onDarkModeChange(e));
         this.twosComplementToggle.addEventListener('change', (e) => this.onTwosComplementChange(e));
         
+        // Add hash change listener for navigation
+        window.addEventListener('hashchange', () => this.loadFromUrl());
+        
         // Add copy URL button listener
         if (this.copyUrlButton) {
             this.copyUrlButton.addEventListener('click', () => this.copyUrlToClipboard());
@@ -48,10 +51,10 @@ class BitConverter {
     
     loadFromUrl() {
         try {
-            const path = window.location.pathname;
+            const hash = window.location.hash;
             
-            // Check if path starts with /0x followed by hex characters
-            const hexMatch = path.match(/^\/0x([0-9a-fA-F_]+)$/);
+            // Check if hash starts with #0x followed by hex characters
+            const hexMatch = hash.match(/^#0x([0-9a-fA-F_]+)$/);
             
             if (hexMatch) {
                 const hexValue = hexMatch[1].replace(/_/g, ''); // Remove underscores
@@ -63,7 +66,7 @@ class BitConverter {
                 }
             }
         } catch (error) {
-            console.warn('Invalid URL path, using default value');
+            console.warn('Invalid URL hash, using default value');
         }
         
         this.hasLoadedFromUrl = false;
@@ -77,8 +80,8 @@ class BitConverter {
                 (BigInt(1) << BigInt(displayBits)) + value : value;
             const hexString = '0x' + hexValue.toString(16).toUpperCase().padStart(hexDigits, '0');
             
-            const newPath = '/' + hexString;
-            window.history.replaceState({}, '', newPath);
+            const newHash = '#' + hexString;
+            window.history.replaceState({}, '', newHash);
         } catch (error) {
             console.warn('Failed to update URL:', error);
         }
